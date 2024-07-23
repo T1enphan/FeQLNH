@@ -7,6 +7,7 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import Test from "./TestDame/test";
 import Blog from "./Blog/Blog";
+import Country from "./Country/Country";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -14,8 +15,9 @@ root.render(
     <Router>
       <App>
         <Routes>
-          <Route path="/test" element={<Test></Test>} />
+          <Route path="/user" element={<Test></Test>} />
           <Route path="/blog" element={<Blog></Blog>} />
+          <Route path="/country" element={<Country></Country>} />
         </Routes>
       </App>
     </Router>

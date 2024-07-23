@@ -15,9 +15,21 @@ export default function MenuLeft() {
               </a>
             </li>
             <li className="sidebar-item">
-              <a className="sidebar-link" href="pages-sign-in.html">
+              <a className="sidebar-link" href="/blog">
                 <i class="fa-solid fa-right-to-bracket"></i>
-                <span className="align-middle">Sign In</span>
+                <span className="align-middle">Blog</span>
+              </a>
+            </li>
+            <li className="sidebar-item">
+              <a className="sidebar-link" href="/country">
+                <i class="fa-solid fa-right-to-bracket"></i>
+                <span className="align-middle">Country</span>
+              </a>
+            </li>
+            <li className="sidebar-item">
+              <a className="sidebar-link" href="/user">
+                <i class="fa-solid fa-right-to-bracket"></i>
+                <span className="align-middle">User</span>
               </a>
             </li>
             <li className="sidebar-header">Plugins &amp; Addons</li>
