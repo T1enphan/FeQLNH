@@ -8,6 +8,8 @@ import reportWebVitals from "./reportWebVitals";
 import Test from "./TestDame/test";
 import Blog from "./Blog/Blog";
 import Country from "./Country/Country";
+import Register from "./TestDame/register";
+import Login from "./TestDame/login";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -18,6 +20,8 @@ root.render(
           <Route path="/user" element={<Test></Test>} />
           <Route path="/blog" element={<Blog></Blog>} />
           <Route path="/country" element={<Country></Country>} />
+          <Route path="/register" element={<Register></Register>} />
+          <Route path="/login" element={<Login></Login>} />
         </Routes>
       </App>
     </Router>

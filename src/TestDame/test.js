@@ -7,13 +7,13 @@ function Test(props) {
   const [data, setData] = useState([]);
   const [errors, setErrors] = useState({});
   const [files, setFiles] = useState([]);
+  const [deleteId, setDeleteId] = useState(null); // Thêm state để lưu trữ ID người dùng cần xóa
   const [input, setInputs] = useState({
     name: "",
     email: "",
     phone: "",
     password: "",
   });
-  const [deleteId, setDeleteId] = useState(null); // Thêm state để lưu trữ ID người dùng cần xóa
 
   // lấy data từ api
   const fetchData = async () => {
