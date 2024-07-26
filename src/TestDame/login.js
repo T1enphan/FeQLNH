@@ -45,9 +45,10 @@ function Login() {
         setAccessToken(response.data.token);
         console.log("1", accessToken);
         console.log("2", response.data.token);
-        // if (response.status === 200) {
-        //   navigate("/user");
-        // }
+        if (response.status === 200) {
+          localStorage.setItem("accountLogin", JSON.stringify(response.data));
+          navigate("/user");
+        }
       } catch (error) {
         console.log(error);
         toast.error("Đã có lỗi xảy ra!");
