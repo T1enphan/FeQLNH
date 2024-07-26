@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
@@ -16,6 +16,18 @@ function Login() {
     const { name, value } = e.target;
     setInput((state) => ({ ...state, [name]: value }));
   };
+
+  const NotificationComponent = () => {
+    useEffect(() => {
+      const hasNotified = localStorage.getItem("accountLogin");
+
+      if (!hasNotified) {
+        toast.warning("Bạn chưa đăng nhập, hãy đăng nhập!");
+        localStorage.setItem("hasNotified", "true");
+      }
+    }, []);
+  };
+  NotificationComponent();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,8 +55,6 @@ function Login() {
           password: input.password,
         });
         setAccessToken(response.data.token);
-        console.log("1", accessToken);
-        console.log("2", response.data.token);
         if (response.status === 200) {
           localStorage.setItem("accountLogin", JSON.stringify(response.data));
           navigate("/user");
@@ -55,7 +65,6 @@ function Login() {
       }
     }
   };
-  console.log("3", accessToken);
   return (
     <div>
       <ToastContainer />

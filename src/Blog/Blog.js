@@ -4,6 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 function Blog() {
   const [data, setData] = useState([]);
+  const [image, setImage] = useState("");
   const [files, setFiles] = useState([]);
   const [deleteId, setDeleteId] = useState(null);
   const [errors, setErrors] = useState({});
@@ -11,6 +12,7 @@ function Blog() {
     title: "",
     description: "",
     content: "",
+    image: "",
   });
 
   const handDelete = async () => {
@@ -39,33 +41,54 @@ function Blog() {
   };
 
   const handleBlogImage = (e) => {
-    const selectedFiles = Array.from(e.target.files);
-    const validImageType = ["image/png", "image/jpg", "image/jpeg"];
-    let error = false;
+    // const selectedFiles = Array.from(e.target.files);
+    // const validImageType = ["image/png", "image/jpg", "image/jpeg"];
+    // let error = false;
 
-    if (selectedFiles.length > 3) {
-      toast.error("Bạn chỉ có thể tải tối đa 3 ảnh");
-      error = true;
-    }
+    // if (selectedFiles.length > 3) {
+    //   toast.error("Bạn chỉ có thể tải tối đa 3 ảnh");
+    //   error = true;
+    // }
 
-    selectedFiles.forEach((file) => {
-      if (!validImageType.includes(file.type)) {
-        toast.error("Không đúng định dạng");
-        error = true;
+    // selectedFiles.forEach((file) => {
+    //   if (!validImageType.includes(file.type)) {
+    //     toast.error("Không đúng định dạng");
+    //     error = true;
+    //   }
+    //   const fileSizeMB = file.size / (1024 * 1024);
+    //   if (fileSizeMB > 1) {
+    //     toast.error("vượt quá 1MB rồi");
+    //     error = true;
+    //   }
+    // });
+    // if (!error) {
+    //   setFiles(selectedFiles);
+    // }
+    const file = e.target.files[0];
+
+    if (file) {
+      const validImageTypes = ["image/png", "image/jpg", "image/jpeg"];
+      if (!validImageTypes.includes(file.type)) {
+        alert("không đúng định dạng");
+        return;
       }
+
       const fileSizeMB = file.size / (1024 * 1024);
       if (fileSizeMB > 1) {
-        toast.error("vượt quá 1MB rồi");
-        error = true;
+        alert("vượt quá 1MB rồi");
+        return;
       }
-    });
-    if (!error) {
-      setFiles(selectedFiles);
+
+      let reader = new FileReader();
+      reader.onload = (e) => {
+        setImage(e.target.result);
+        setFiles(file);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
   const fetchData = async () => {
-    console.log("khởi chạy : fetchData");
     try {
       const res = await axios.get("http://localhost:3003/api/blog/get-data");
       setData(res.data);
@@ -76,7 +99,6 @@ function Blog() {
 
   useEffect(() => {
     fetchData();
-    console.log("khởi chạy : useEffect");
   }, []);
 
   const handleSubmit = async (e) => {
@@ -98,7 +120,7 @@ function Blog() {
       toast.error("Vui lòng nhập content");
       flag = false;
     }
-    if (!files || files.length === 0) {
+    if (!files) {
       errorSubmit.image = "Hãy thêm ảnh vào";
       toast.error("Hãy thêm ảnh vào");
       flag = false;
@@ -112,7 +134,7 @@ function Blog() {
         let url = "http://localhost:3003/api/create-blog";
         let config = {
           headers: {
-            "Content-type": "multipart/form-data",
+            // "Content-type": "multipart/form-data",
             Accept: "application/json",
           },
         };
@@ -120,9 +142,7 @@ function Blog() {
         formData.append("title", input.title);
         formData.append("description", input.description);
         formData.append("content", input.content);
-        files.forEach((file) => {
-          formData.append("image", file);
-        });
+        formData.append("image", files);
         const response = await axios.post(url, formData, config);
         if (response.status === 200) {
           toast.success("Bài viết đã được thêm thành công!");
@@ -140,7 +160,6 @@ function Blog() {
   };
 
   const renderData = () => {
-    console.log("khởi chạy : renderData");
     if (data.length > 0) {
       return data.map((value, key) => (
         <tr key={key}>
@@ -149,7 +168,7 @@ function Blog() {
           <td>{value.description}</td>
           <td>
             <img
-              src={value.image}
+              src={`http://localhost:3003${value.image}`}
               alt={value.title}
               style={{ width: "100px", height: "auto" }}
             />
@@ -256,7 +275,7 @@ function Blog() {
                   />
                   <label className="text-center">Image</label>
                   <input
-                    multiple
+                    // multiple
                     className="form-control"
                     type="file"
                     onChange={handleBlogImage}

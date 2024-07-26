@@ -95,11 +95,13 @@ function Register() {
         });
         const response = await axios.post(url, formData, config);
         if (response.status === 200) {
-          toast.success("Đăng kí thành công!");
           setInput({ email: "", name: "", phone: "", password: "" });
           setFiles([]);
           setErrors({});
-          navigate("/login");
+          toast.success("Đăng kí thành công!");
+          setTimeout(() => {
+            navigate("/login");
+          }, 2000);
         }
       } catch (error) {
         console.error(error);
@@ -175,7 +177,6 @@ function Register() {
                         <div class="mb-3">
                           <label class="form-label">Avatar</label>
                           <input
-                            multiple
                             class="form-control form-control-lg"
                             type="file"
                             placeholder="Avatar"
