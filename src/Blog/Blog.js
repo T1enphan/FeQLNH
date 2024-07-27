@@ -6,6 +6,7 @@ function Blog() {
   const [data, setData] = useState([]);
   const [image, setImage] = useState("");
   const [files, setFiles] = useState([]);
+  const [descriptionId, setDescriptionId] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
   const [errors, setErrors] = useState({});
   const [input, setInputs] = useState({
@@ -162,10 +163,19 @@ function Blog() {
   const renderData = () => {
     if (data.length > 0) {
       return data.map((value, key) => (
-        <tr key={key}>
+        <tr key={key} className="align-middle">
           <th scope="row">{key + 1}</th>
           <td>{value.title}</td>
-          <td>{value.description}</td>
+          <td className="text-center">
+            <button
+              className="btn btn-primary"
+              data-bs-toggle="modal"
+              data-bs-target="#descriptionModal"
+              onClick={() => setDescriptionId(value.id)}
+            >
+              <i class="fa-solid fa-file"></i>
+            </button>
+          </td>
           <td>
             <img
               src={`http://localhost:3003${value.image}`}
@@ -188,6 +198,15 @@ function Blog() {
           </td>
         </tr>
       ));
+    }
+  };
+
+  const renderDescription = () => {
+    if (descriptionId) {
+      const blog = data.find((item) => item.id === descriptionId);
+      if (blog) {
+        return <div class="modal-body">{blog.description}</div>;
+      }
     }
   };
 
@@ -338,6 +357,40 @@ function Blog() {
                   className="btn btn-danger"
                 >
                   Xóa
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* description modal */}
+        <div
+          class="modal fade"
+          id="descriptionModal"
+          tabindex="-1"
+          aria-labelledby="exampleModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                  Description
+                </h5>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              {renderDescription()}
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Close
                 </button>
               </div>
             </div>

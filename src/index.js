@@ -11,6 +11,8 @@ import Country from "./Country/Country";
 import Register from "./TestDame/register";
 import Login from "./TestDame/login";
 import User from "./User/User";
+import BlogDetail from "./Blog/BlogDetail";
+import BlogList from "./Blog/BlogList";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -24,6 +26,8 @@ root.render(
           <Route path="/register" element={<Register></Register>} />
           <Route path="/login" element={<Login></Login>} />
           <Route path="/update-user" element={<User></User>} />
+          <Route path="/blog-detail/:id" element={<BlogDetail></BlogDetail>} />
+          <Route path="/blog-list" element={<BlogList></BlogList>} />
         </Routes>
       </App>
     </Router>
