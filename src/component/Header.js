@@ -202,11 +202,11 @@ export default function Header() {
                 href="#"
                 data-bs-toggle="dropdown"
               >
-                <img
+                {/* <img
                   src="img/avatars/avatar-6.jpg"
                   className="avatar img-fluid rounded me-1"
                   alt="Charles Hall"
-                />{" "}
+                />{" "} */}
                 <span className="text-dark">Neit</span>
               </a>
               <div className="dropdown-menu dropdown-menu-end">
