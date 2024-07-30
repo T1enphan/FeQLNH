@@ -19,8 +19,8 @@ function BlogList() {
   const renderData = () => {
     if (data.length > 0) {
       return data.map((value, key) => (
-        <div class="col-12 col-md-6">
-          <div class="card" key={key}>
+        <div class="col-12 col-md-6" key={key}>
+          <div class="card">
             <img
               class="card-img-top"
               src={`http://localhost:3003${value.image}`}
