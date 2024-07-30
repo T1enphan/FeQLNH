@@ -1,4 +1,4 @@
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link } from "react-router-dom";
 
 export default function MenuLeft() {
   const location = useLocation();
@@ -12,34 +12,54 @@ export default function MenuLeft() {
           </a>
           <ul className="sidebar-nav">
             <li className="sidebar-header">Pages</li>
-            <li className={`sidebar-item ${location.pathname === '/' ? 'active' : ''}`}>
+            <li
+              className={`sidebar-item ${
+                location.pathname === "/" ? "active" : ""
+              }`}
+            >
               <Link className="sidebar-link" to="/">
                 <i className="fa-solid fa-user"></i>
                 <span className="align-middle">Dashboard</span>
               </Link>
             </li>
-            <li className={`sidebar-item ${location.pathname === '/blog' ? 'active' : ''}`}>
+            <li
+              className={`sidebar-item ${
+                location.pathname === "/blog" ? "active" : ""
+              }`}
+            >
               <Link className="sidebar-link" to="/blog">
                 <i className="fa-solid fa-right-to-bracket"></i>
                 <span className="align-middle">Blog</span>
               </Link>
             </li>
-            <li className={`sidebar-item ${location.pathname === '/country' ? 'active' : ''}`}>
+            <li
+              className={`sidebar-item ${
+                location.pathname === "/country" ? "active" : ""
+              }`}
+            >
               <Link className="sidebar-link" to="/country">
                 <i className="fa-solid fa-right-to-bracket"></i>
                 <span className="align-middle">Country</span>
               </Link>
             </li>
-            <li className={`sidebar-item ${location.pathname === '/user' ? 'active' : ''}`}>
+            <li
+              className={`sidebar-item ${
+                location.pathname === "/user" ? "active" : ""
+              }`}
+            >
               <Link className="sidebar-link" to="/user">
                 <i className="fa-solid fa-right-to-bracket"></i>
                 <span className="align-middle">User</span>
               </Link>
             </li>
-            <li className={`sidebar-item ${location.pathname === '/update-user' ? 'active' : ''}`}>
-              <Link className="sidebar-link" to="/update-user">
+            <li
+              className={`sidebar-item ${
+                location.pathname === "/blog-list" ? "active" : ""
+              }`}
+            >
+              <Link className="sidebar-link" to="/blog-list">
                 <i className="fa-solid fa-right-to-bracket"></i>
-                <span className="align-middle">Update Profile</span>
+                <span className="align-middle">Blog List</span>
               </Link>
             </li>
             {/* <li className="sidebar-item">
@@ -49,7 +69,11 @@ export default function MenuLeft() {
               </a>
             </li> */}
             <li className="sidebar-header">Plugins &amp; Addons</li>
-            <li className={`sidebar-item ${location.pathname === '/maps-google.html' ? 'active' : ''}`}>
+            <li
+              className={`sidebar-item ${
+                location.pathname === "/maps-google.html" ? "active" : ""
+              }`}
+            >
               <Link className="sidebar-link" to="/maps-google.html">
                 <i className="fa-solid fa-bed"></i>
                 <span className="align-middle">Maps</span>

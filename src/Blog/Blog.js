@@ -153,6 +153,9 @@ function Blog() {
           document.getElementById("closeModalButton").click();
           fetchData();
         }
+        console.log("====================================");
+        console.log(response);
+        console.log("====================================");
       } catch (error) {
         toast.error("Có lỗi xảy ra khi thêm bài viết");
         console.log(error);

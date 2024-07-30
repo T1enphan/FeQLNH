@@ -19,27 +19,45 @@ function User() {
     avatar: "",
   });
   useEffect(() => {
-    let userData = localStorage.getItem("accountLogin");
-    if (userData) {
-      userData = JSON.parse(userData);
-      console.log("User Data:", userData); // Kiểm tra dữ liệu của user
-      const userAuth = userData;
-      console.log("User Auth:", userAuth); // Kiểm tra đối tượng userAuth
-      setIsLogin(true);
-      setAccessToken(userData.token);
-      setUser({
-        id: userAuth.id, // Có thể là undefined
-        name: userAuth.name,
-        email: userAuth.email,
-        phone: userAuth.phone,
-        avatar: userAuth.avatar,
-      });
-      setAvatar(userAuth.avatar);
-    } else {
-      toast.warning("Bạn chưa đăng nhập, hãy đăng nhập!");
-      navigate("/login");
-    }
+    const fetchData = () => {
+      let userData = localStorage.getItem("accountLogin");
+      if (userData) {
+        try {
+          const parsedUserData = JSON.parse(userData);
+
+          // Kiểm tra xem parsedUserData và các thuộc tính của nó có tồn tại không
+          if (parsedUserData && parsedUserData.user && parsedUserData.token) {
+            console.log("User Data:", parsedUserData); // Kiểm tra dữ liệu của user
+            const userAuth = parsedUserData;
+            console.log("User Auth:", userAuth.user); // Kiểm tra đối tượng userAuth
+
+            setIsLogin(true);
+            setAccessToken(userAuth.token);
+            setUser({
+              id: userAuth.user.id || "",
+              name: userAuth.user.name || "",
+              email: userAuth.user.email || "",
+              phone: userAuth.user.phone || "",
+              avatar: userAuth.user.avatar || "",
+            });
+            setAvatar(userAuth.user.avatar || "");
+          } else {
+            throw new Error("Invalid data format");
+          }
+        } catch (e) {
+          console.error("Error parsing JSON from localStorage", e);
+          toast.error("Lỗi xác thực. Vui lòng đăng nhập lại!");
+          navigate("/login");
+        }
+      } else {
+        toast.warning("Bạn chưa đăng nhập, hãy đăng nhập!");
+        navigate("/login");
+      }
+    };
+
+    fetchData();
   }, [navigate]);
+
   const handleUserInputFile = (e) => {
     const file = e.target.files[0];
 
@@ -64,17 +82,6 @@ function User() {
       reader.readAsDataURL(file);
     }
   };
-
-  // const checkLoginUser = () => {
-  //   if (isLogin) {
-  //     toast.success("Bạn đã Login");
-  //     return true;
-  //   } else {
-  //     toast.error("Bạn hãy login trước!");
-  //     navigate("/login");
-  //     return false;
-  //   }
-  // };
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser((state) => ({ ...state, [name]: value }));
@@ -82,7 +89,6 @@ function User() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // if (!checkLoginUser()) return;
 
     let errorSubmit = {};
     let flag = true;
@@ -113,11 +119,10 @@ function User() {
     } else {
       setErrors({});
       try {
-        let url = `http://localhost:3003/api/update/${user.id}`;
-        let config = {
-          header: {
+        const url = `http://localhost:3003/api/update/${user.id}`;
+        const config = {
+          headers: {
             Authorization: `Bearer ${accessToken}`,
-            // "Content-Type": "multipart/form-data", thêm nhiều ảnh mới dùng
             Accept: "application/json",
           },
         };
@@ -126,12 +131,32 @@ function User() {
         formData.append("email", user.email);
         formData.append("phone", user.phone);
         formData.append("avatar", files);
+        console.log("====================================");
+        console.log(files);
+        console.log("====================================");
         const response = await axios.put(url, formData, config);
-        toast.success("User updated successfully:");
-        localStorage.setItem("accountLogin", JSON.stringify(response.data));
+
+        // Kiểm tra phản hồi từ API
+        console.log("API Response:", response);
+        // Kiểm tra xem response.data và response.data.user có tồn tại không
+        if (response.data) {
+          toast.success("User updated successfully:");
+
+          // Lưu lại thông tin người dùng và token sau khi cập nhật
+          const updatedUser = {
+            message: "Đăng nhập thành công",
+            token: accessToken,
+            user: response.data,
+          };
+
+          localStorage.setItem("accountLogin", JSON.stringify(updatedUser));
+          setUser(response.data); // Cập nhật lại user từ response
+        } else {
+          toast.error("Phản hồi từ API không hợp lệ");
+        }
       } catch (error) {
-        console.error(error);
-        toast.error("Đã có xảy ra");
+        console.error("Error during API call:", error);
+        toast.error("Đã có xảy ra lỗi");
       }
     }
   };

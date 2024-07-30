@@ -1,4 +1,31 @@
-export default function Header() {
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+function Header() {
+  const [idData, setIdData] = useState({});
+
+  useEffect(() => {
+    const fetchData = () => {
+      let userData = localStorage.getItem("accountLogin");
+      if (userData) {
+        userData = JSON.parse(userData);
+        if (userData && userData.user && userData.user.id) {
+          setIdData(userData.user.id);
+        }
+      }
+    };
+    fetchData();
+  }, []); // Chạy một lần khi component được mount
+
+  const LinktoProfile = () => {
+    if (idData) {
+      return (
+        <Link className="dropdown-item" to={`/update-user/${idData}`}>
+          <i className="align-middle me-1" data-feather="user" /> Profile
+        </Link>
+      );
+    }
+    return null; // Trả về null nếu idData không tồn tại
+  };
   return (
     <div>
       <nav className="navbar navbar-expand navbar-light navbar-bg">
@@ -210,10 +237,7 @@ export default function Header() {
                 <span className="text-dark">Neit</span>
               </a>
               <div className="dropdown-menu dropdown-menu-end">
-                <a className="dropdown-item" href="pages-profile.html">
-                  <i className="align-middle me-1" data-feather="user" />{" "}
-                  Profile
-                </a>
+                {LinktoProfile()}
                 <a className="dropdown-item" href="#">
                   <i className="align-middle me-1" data-feather="pie-chart" />{" "}
                   Analytics
@@ -239,3 +263,4 @@ export default function Header() {
     </div>
   );
 }
+export default Header;

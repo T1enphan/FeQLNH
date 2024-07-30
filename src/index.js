@@ -25,7 +25,7 @@ root.render(
           <Route path="/country" element={<Country></Country>} />
           <Route path="/register" element={<Register></Register>} />
           <Route path="/login" element={<Login></Login>} />
-          <Route path="/update-user" element={<User></User>} />
+          <Route path="/update-user/:id" element={<User></User>} />
           <Route path="/blog-detail/:id" element={<BlogDetail></BlogDetail>} />
           <Route path="/blog-list" element={<BlogList></BlogList>} />
         </Routes>
