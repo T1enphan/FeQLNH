@@ -62,6 +62,36 @@ export default function MenuLeft() {
                 <span className="align-middle">Blog List</span>
               </Link>
             </li>
+            <li
+              className={`sidebar-item ${
+                location.pathname === "/brand" ? "active" : ""
+              }`}
+            >
+              <Link className="sidebar-link" to="/brand">
+                <i className="fa-solid fa-right-to-bracket"></i>
+                <span className="align-middle">Brand</span>
+              </Link>
+            </li>
+            <li
+              className={`sidebar-item ${
+                location.pathname === "/category" ? "active" : ""
+              }`}
+            >
+              <Link className="sidebar-link" to="/category">
+                <i className="fa-solid fa-right-to-bracket"></i>
+                <span className="align-middle">Category</span>
+              </Link>
+            </li>
+            <li
+              className={`sidebar-item ${
+                location.pathname === "/product" ? "active" : ""
+              }`}
+            >
+              <Link className="sidebar-link" to="/product">
+                <i className="fa-solid fa-right-to-bracket"></i>
+                <span className="align-middle">Product</span>
+              </Link>
+            </li>
             {/* <li className="sidebar-item">
               <a className="sidebar-link" href="/update-user">
                 <i class="fa-solid fa-right-to-bracket"></i>

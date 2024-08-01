@@ -13,7 +13,9 @@ import Login from "./TestDame/login";
 import User from "./User/User";
 import BlogDetail from "./Blog/BlogDetail";
 import BlogList from "./Blog/BlogList";
-
+import Brand from "./Brand/brand";
+import Category from "./Category/category";
+import Product from "./Product/product";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
@@ -28,6 +30,9 @@ root.render(
           <Route path="/update-user/:id" element={<User></User>} />
           <Route path="/blog-detail/:id" element={<BlogDetail></BlogDetail>} />
           <Route path="/blog-list" element={<BlogList></BlogList>} />
+          <Route path="/brand" element={<Brand></Brand>} />
+          <Route path="/category" element={<Category></Category>} />
+          <Route path="/product" element={<Product></Product>} />
         </Routes>
       </App>
     </Router>
