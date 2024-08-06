@@ -19,19 +19,19 @@ function BlogList() {
   const renderData = () => {
     if (data.length > 0) {
       return data.map((value, key) => (
-        <div class="col-12 col-md-6" key={key}>
-          <div class="card">
+        <div className="col-12 col-md-6" key={key}>
+          <div className="card">
             <img
-              class="card-img-top"
+              className="card-img-top"
               src={`http://localhost:3003${value.image}`}
               alt="Unsplash"
             />
-            <div class="card-header">
-              <h5 class="card-title mb-0">{value.title}</h5>
+            <div className="card-header">
+              <h5 className="card-title mb-0">{value.title}</h5>
             </div>
-            <div class="card-body">
-              <p class="card-text">{value.description}</p>
-              <Link to={`/blog-detail/${value.id}`} class="btn btn-primary">
+            <div className="card-body">
+              <p className="card-text">{value.description}</p>
+              <Link to={`/blog-detail/${value.id}`} className="btn btn-primary">
                 Chi tiết bài viết
               </Link>
             </div>

@@ -112,7 +112,7 @@ function Country() {
                   value={input.name}
                   onChange={handleChange}
                 />
-                {errors.name && <p className="text-danger">{errors.name}</p>}
+                {/* {errors.name && <p className="text-danger">{errors.name}</p>} */}
               </div>
               <div className="card-footer text-end">
                 <button className="btn btn-success" type="submit">Thêm Mới</button>

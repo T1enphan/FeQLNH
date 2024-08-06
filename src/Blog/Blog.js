@@ -176,7 +176,7 @@ function Blog() {
               data-bs-target="#descriptionModal"
               onClick={() => setDescriptionId(value.id)}
             >
-              <i class="fa-solid fa-file"></i>
+              <i className="fa-solid fa-file"></i>
             </button>
           </td>
           <td>
@@ -208,7 +208,7 @@ function Blog() {
     if (descriptionId) {
       const blog = data.find((item) => item.id === descriptionId);
       if (blog) {
-        return <div class="modal-body">{blog.description}</div>;
+        return <div className="modal-body">{blog.description}</div>;
       }
     }
   };
@@ -367,30 +367,30 @@ function Blog() {
         </div>
         {/* description modal */}
         <div
-          class="modal fade"
+          className="modal fade"
           id="descriptionModal"
           tabindex="-1"
           aria-labelledby="exampleModalLabel"
           aria-hidden="true"
         >
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel">
                   Description
                 </h5>
                 <button
                   type="button"
-                  class="btn-close"
+                  className="btn-close"
                   data-bs-dismiss="modal"
                   aria-label="Close"
                 ></button>
               </div>
               {renderDescription()}
-              <div class="modal-footer">
+              <div className="modal-footer">
                 <button
                   type="button"
-                  class="btn btn-secondary"
+                  className="btn btn-secondary"
                   data-bs-dismiss="modal"
                 >
                   Close
