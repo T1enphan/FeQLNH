@@ -16,23 +16,36 @@ import BlogList from "./Blog/BlogList";
 import Brand from "./Brand/brand";
 import Category from "./Category/category";
 import Product from "./Product/product";
+import withAuth from "./withAuth"; // Import HOC
+
+const ProtectedTest = withAuth(Test);
+const ProtectedBlog = withAuth(Blog);
+const ProtectedCountry = withAuth(Country);
+const ProtectedUser = withAuth(User);
+const ProtectedBlogDetail = withAuth(BlogDetail);
+const ProtectedBlogList = withAuth(BlogList);
+const ProtectedBrand = withAuth(Brand);
+const ProtectedCategory = withAuth(Category);
+const ProtectedProduct = withAuth(Product);
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <Router>
       <App>
         <Routes>
-          <Route path="/user" element={<Test></Test>} />
-          <Route path="/blog" element={<Blog></Blog>} />
-          <Route path="/country" element={<Country></Country>} />
-          <Route path="/register" element={<Register></Register>} />
-          <Route path="/login" element={<Login></Login>} />
-          <Route path="/update-user/:id" element={<User></User>} />
-          <Route path="/blog-detail/:id" element={<BlogDetail></BlogDetail>} />
-          <Route path="/blog-list" element={<BlogList></BlogList>} />
-          <Route path="/brand" element={<Brand></Brand>} />
-          <Route path="/category" element={<Category></Category>} />
-          <Route path="/product" element={<Product></Product>} />
+          <Route path="/" element={<ProtectedTest />} />
+          <Route path="/user" element={<ProtectedUser />} />
+          <Route path="/blog" element={<ProtectedBlog />} />
+          <Route path="/country" element={<ProtectedCountry />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/update-user/:id" element={<ProtectedUser />} />
+          <Route path="/blog-detail/:id" element={<ProtectedBlogDetail />} />
+          <Route path="/blog-list" element={<ProtectedBlogList />} />
+          <Route path="/brand" element={<ProtectedBrand />} />
+          <Route path="/category" element={<ProtectedCategory />} />
+          <Route path="/product" element={<ProtectedProduct />} />
         </Routes>
       </App>
     </Router>

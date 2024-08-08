@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
+
 function Login() {
   const navigate = useNavigate();
   const [error, setErrors] = useState({});
@@ -17,17 +18,14 @@ function Login() {
     setInput((state) => ({ ...state, [name]: value }));
   };
 
-  const NotificationComponent = () => {
-    useEffect(() => {
-      const hasNotified = localStorage.getItem("accountLogin");
+  useEffect(() => {
+    const hasNotified = localStorage.getItem("accountLogin");
 
-      if (!hasNotified) {
-        toast.warning("Bạn chưa đăng nhập, hãy đăng nhập!");
-        localStorage.setItem("hasNotified", "true");
-      }
-    }, []);
-  };
-  NotificationComponent();
+    if (!hasNotified) {
+      toast.warning("Bạn chưa đăng nhập, hãy đăng nhập!");
+      localStorage.setItem("hasNotified", "true");
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -57,7 +55,7 @@ function Login() {
         setAccessToken(response.data.token);
         if (response.status === 200) {
           localStorage.setItem("accountLogin", JSON.stringify(response.data));
-          navigate("/user");
+          navigate("/"); // Chuyển hướng tới trang chính sau khi đăng nhập thành công
         }
       } catch (error) {
         console.log(error);
@@ -65,6 +63,7 @@ function Login() {
       }
     }
   };
+
   return (
     <div>
       <ToastContainer />
@@ -144,4 +143,5 @@ function Login() {
     </div>
   );
 }
+
 export default Login;
