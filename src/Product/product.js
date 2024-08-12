@@ -5,12 +5,25 @@ import "react-toastify/dist/ReactToastify.css";
 function Product() {
   const [accessToken, setAccessToken] = useState(null);
   const [category, setCategory] = useState([]);
+  const [editID, setEditId] = useState(null);
   const [brand, setBrand] = useState([]);
   const [files, setFiles] = useState(null);
-  const [data, setData] = useState([])
-  const [detailID, setdetailID] = useState(null)
+  const [data, setData] = useState([]);
+  const [detailID, setdetailID] = useState(null);
   const [image, setImage] = useState("");
   const [user, setUser] = useState([]);
+  const [inputEdit, setInputEdit] = useState({
+    id_category: "",
+    id_brand: "",
+    id_user: "",
+    name: "",
+    status: "",
+    price: "",
+    sale: "",
+    company_profile: "",
+    detail: "",
+    image: "",
+  });
   const [input, setInput] = useState({
     id_category: "",
     id_brand: "",
@@ -23,9 +36,6 @@ function Product() {
     detail: "",
     image: "",
   });
-
-  
-
   const handleProductInputFile = (e) => {
     const file = e.target.files[0];
 
@@ -54,6 +64,96 @@ function Product() {
     const { name, value } = e.target;
     setInput((state) => ({ ...state, [name]: value }));
   };
+
+  const hanldeUpdate = (item) => {
+    setEditId(item.id);
+    setInputEdit({
+      id_category: item.id_category,
+      id_brand: item.id_brand,
+      id_user: item.id_user,
+      name: item.name,
+      price: item.price,
+      status: item.status,
+      sale: item.sale,
+      company_profile: item.company_profile,
+      detail: item.detail,
+      image: item.image,
+    });
+  };
+
+  const handleChangeEdit = (e) => {
+    const { name, value } = e.target;
+    setInputEdit((state) => ({ ...state, [name]: value }));
+  };
+
+  const handleUpdateSubmit = async (e) => {
+    e.preventDefault();
+    console.log("Status before submission:", inputEdit.status);
+
+    try {
+      const url = `http://localhost:3003/api/product/update/${editID}`;
+      const config = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          Accept: "application/json",
+        },
+      };
+
+      const formData = new FormData();
+      formData.append("name", inputEdit.name);
+      formData.append("id_category", inputEdit.id_category);
+      formData.append("id_brand", inputEdit.id_brand);
+      formData.append("sale", inputEdit.sale);
+      formData.append("price", inputEdit.price);
+      formData.append("id_user", user.id);
+      formData.append("company_profile", inputEdit.company_profile);
+      formData.append("detail", inputEdit.detail);
+      formData.append("status", inputEdit.status);
+      if (files) {
+        formData.append("image", files);
+      }
+
+      // Log FormData content
+      // for (let [key, value] of formData.entries()) {
+      //   console.log(`${key}:`, value);
+      // }
+
+      const res = await axios.put(url, formData, config);
+      if (res.status === 200) {
+        toast.success("Cập nhật thành công sản phẩm!");
+        getDataProduct();
+        document.getElementById("closeModalUpdate").click();
+      }
+    } catch (error) {
+      console.error("Error:", error.response || error); // Detailed error
+    }
+  };
+  const handleDelete = async (deleteID) => {
+    if (!deleteID) {
+      toast.error("Không có sản phẩm để xóa");
+      return;
+    }
+
+    try {
+      const res = await axios.delete(
+        `http://localhost:3003/api/product/delete/${deleteID}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Sử dụng accessToken từ state
+          },
+        }
+      );
+      if (res.status === 200) {
+        toast.success("Xóa thành công sản phẩm!");
+        getDataProduct();
+      } else {
+        toast.error("Không thể xóa sản phẩm");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const getDataBrand = async () => {
     try {
       const res = await axios.get("http://localhost:3003/api/brand/get-data");
@@ -62,6 +162,7 @@ function Product() {
       console.error(error);
     }
   };
+
   const getDataCategory = async () => {
     try {
       const res = await axios.get(
@@ -72,24 +173,30 @@ function Product() {
       console.error(error);
     }
   };
+
   const getUser = async () => {
     let userData = localStorage.getItem("accountLogin");
     let userLocal = JSON.parse(userData);
     setUser(userLocal.user);
     setAccessToken(userLocal.token);
   };
+
   const getDataProduct = async () => {
     try {
-      const res = await axios.get(`http://localhost:3003/api/product/get-data`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`, // Sử dụng accessToken từ state
-        },
-      });
+      const res = await axios.get(
+        `http://localhost:3003/api/product/get-data`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Sử dụng accessToken từ state
+          },
+        }
+      );
       setData(res.data);
     } catch (error) {
       console.log(error);
     }
   };
+
   useEffect(() => {
     getUser(); // Chỉ cần gọi getUser ở đây
     getDataCategory();
@@ -152,7 +259,7 @@ function Product() {
             Authorization: `Bearer ${accessToken}`,
             Accept: "application/json",
           },
-        }
+        };
         const formData = new FormData();
         formData.append("name", input.name);
         formData.append("id_category", input.id_category);
@@ -178,63 +285,81 @@ function Product() {
             company_profile: "",
             detail: "",
             image: "",
-          })
+          });
+          getDataProduct();
           document.getElementById("dongmodal").click();
           document.querySelector('input[type="file"]').value = null;
         }
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
     }
   };
+
   const renderData = () => {
     if (data.length > 0) {
       return data.map((value, key) => {
         // Tìm name của category và brand dựa trên id
-        const categoryName = category.find(cat => cat.id === value.id_category)?.name || "Không có dữ liệu";
-        const brandName = brand.find(br => br.id === value.id_brand)?.name || "Không có dữ liệu";
-  
+        const categoryName =
+          category.find((cat) => cat.id === value.id_category)?.name ||
+          "Không có dữ liệu";
+        const brandName =
+          brand.find((br) => br.id === value.id_brand)?.name ||
+          "Không có dữ liệu";
+
         return (
           <tr key={key}>
-            <th scope="row">{key + 1}</th>
+            <th className="align-middle text-center" scope="row">
+              {key + 1}
+            </th>
             <td>{value.name}</td>
             <td>{categoryName}</td> {/* Hiển thị name của category */}
             <td>{brandName}</td> {/* Hiển thị name của brand */}
-            <td>{value.price}</td>
-            <td>{value.sale}</td>
-            <td>
+            <td className="text-center">{value.price}</td>
+            <td className="text-center">{value.sale}</td>
+            <td className="text-center">
               <button
-                className={`btn ${value.status === 1 ? "btn-success" : "btn-secondary"}`}
+                className={`btn ${
+                  value.status === 1 ? "btn-success" : "btn-secondary"
+                }`}
               >
-                {value.status === 1 ? "Hoạt động" : "Tạm tắt"}
+                {value.status === 1 ? "Còn hàng" : "Hết hàng"}
               </button>
             </td>
-            <td>
+            <td className="text-center">
               <img
                 src={`http://localhost:3003${value.image}`}
                 alt={value.title}
                 style={{ width: "100px", height: "auto" }}
               />
             </td>
-            <td><button
-              className="btn btn-primary"
-              data-bs-toggle="modal"
-              data-bs-target="#descriptionModal"
-              onClick={() => setdetailID(value.id)}
-            >
-              <i className="fa-solid fa-file"></i>
-            </button></td>
-            <td>{value.company_profile}</td>
-            <td>
+            <td className="text-center">
               <button
+                className="btn btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#descriptionModal"
+                onClick={() => setdetailID(value.id)}
+              >
+                <i className="fa-solid fa-file"></i>
+              </button>
+            </td>
+            <td>{value.company_profile}</td>
+            <td className="text-center">
+              <button
+                onClick={() => hanldeUpdate(value)}
                 className="btn btn-warning"
                 style={{ marginRight: "10px" }}
                 data-bs-toggle="modal"
                 data-bs-target="#updateModal"
               >
-                <i className="fa-solid fa-wrench"/>
+                <i className="fa-solid fa-wrench" />
               </button>
-              <button className="btn btn-danger"><i class="fa-regular fa-trash-can"/></button>
+              <button
+                onClick={() => handleDelete(value.id)}
+                className="btn btn-danger"
+              >
+                <i class="fa-regular fa-trash-can" />
+              </button>
             </td>
           </tr>
         );
@@ -242,20 +367,22 @@ function Product() {
     }
   };
   const renderDetail = () => {
-    if(detailID) {
+    if (detailID) {
       const product = data.find((item) => item.id === detailID);
       if (product) {
-        return <div className="modal-body">{product.detail}</div>
+        return (
+          <div className="modal-body">
+            {product.detail}/ {product.price}
+          </div>
+        );
       }
     }
-  }
+  };
   return (
     <div>
       <ToastContainer />
       <div className="row">
-        <div className="col-10">
-          
-        </div>
+        <div className="col-10"></div>
         <div className="col-2 text-end">
           <button
             className="btn btn-primary text-end"
@@ -385,7 +512,11 @@ function Product() {
                   </div>
                   <div className="row-8">
                     <label>Hình ảnh</label>
-                    <input type="file" onChange={handleProductInputFile} className="form-control" />
+                    <input
+                      type="file"
+                      onChange={handleProductInputFile}
+                      className="form-control"
+                    />
                   </div>
                 </div>
                 <div class="modal-footer">
@@ -408,7 +539,7 @@ function Product() {
         <div
           className="modal fade"
           id="descriptionModal"
-          tabindex="-1"
+          tabIndex="-1"
           aria-labelledby="exampleModalLabel"
           aria-hidden="true"
         >
@@ -434,6 +565,152 @@ function Product() {
                 >
                   Close
                 </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="modal fade"
+          id="updateModal"
+          tabIndex="-1"
+          aria-labelledby="exampleModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                  Cập nhật sản phẩm
+                </h5>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <form onSubmit={handleUpdateSubmit}>
+                  <div class="modal-body">
+                    <div className="row-8">
+                      <label>Tên sản phẩm</label>
+                      <input
+                        name="name"
+                        value={inputEdit.name}
+                        onChange={handleChangeEdit}
+                        className="form-control"
+                      />
+                    </div>
+                    <div className="row">
+                      <div className="col-6">
+                        <label>Thương Hiệu</label>
+                        <select
+                          className="form-control"
+                          value={inputEdit.id_brand || ""}
+                          name="id_brand"
+                          onChange={handleChangeEdit}
+                        >
+                          <option value="0">Hãy chọn brand</option>
+                          {brand.map((option) => (
+                            <option key={option.id} value={option.id}>
+                              {option.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="col-6">
+                        <label>Loại sản phẩm</label>
+                        <select
+                          className="form-control"
+                          value={inputEdit.id_category || ""}
+                          name="id_category"
+                          onChange={handleChangeEdit}
+                        >
+                          <option value="0">Hãy chọn brand</option>
+                          {category.map((option) => (
+                            <option key={option.id} value={option.id}>
+                              {option.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="col-6">
+                        <label>Giá bán</label>
+                        <input
+                          name="price"
+                          value={inputEdit.price || ""}
+                          onChange={handleChangeEdit}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="col-6">
+                        <label>Khuyến mãi</label>
+                        <input
+                          name="sale"
+                          value={inputEdit.sale || ""}
+                          onChange={handleChangeEdit}
+                          className="form-control"
+                        />
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="col-6">
+                        <label>Tên công ty</label>
+                        <input
+                          name="company_profile"
+                          value={inputEdit.company_profile || ""}
+                          onChange={handleChangeEdit}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="col-6">
+                        <label>Trạng thái</label>
+                        <select
+                          className="form-control"
+                          value={inputEdit.status || ""}
+                          name="status"
+                          onChange={handleChangeEdit}
+                        >
+                          <option>Hãy chọn tình trạng</option>
+                          <option value={0}>Hết Hàng</option>
+                          <option value={1}>Còn Hàng</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div className="row-8">
+                      <label>Mô tả</label>
+                      <textarea
+                        name="detail"
+                        onChange={handleChangeEdit}
+                        value={inputEdit.detail || ""}
+                        className="form-control"
+                      />
+                    </div>
+                    <div className="row-8">
+                      <label>Hình ảnh</label>
+                      <input
+                        type="file"
+                        onChange={handleProductInputFile}
+                        className="form-control"
+                      />
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button
+                      id="closeModalUpdate"
+                      type="button"
+                      class="btn btn-secondary"
+                      data-bs-dismiss="modal"
+                    >
+                      Close
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                      Cập nhật
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
           </div>
@@ -464,9 +741,7 @@ function Product() {
                   <th scope="col">Action</th>
                 </tr>
               </thead>
-              <tbody>
-                {renderData()}
-              </tbody>
+              <tbody>{renderData()}</tbody>
             </table>
           </div>
         </div>
