@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 function Product() {
+  const [query, setQuery] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
   const [category, setCategory] = useState([]);
   const [editID, setEditId] = useState(null);
@@ -36,6 +39,7 @@ function Product() {
     detail: "",
     image: "",
   });
+
   const handleProductInputFile = (e) => {
     const file = e.target.files[0];
 
@@ -197,6 +201,34 @@ function Product() {
     }
   };
 
+  const handleSearch = async () => {
+    if (!query.trim()) {
+      getDataProduct(); // Nếu không có giá trị tìm kiếm, lấy tất cả sản phẩm
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.get(
+        "http://localhost:3003/api/product/search",
+        {
+          params: { query },
+        }
+      );
+      setData(response.data);
+    } catch (error) {
+      setError("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    setQuery(e.target.value);
+    handleSearch(); // Trigger search or fetch all data when input changes
+  };
+
   useEffect(() => {
     getUser(); // Chỉ cần gọi getUser ở đây
     getDataCategory();
@@ -295,11 +327,28 @@ function Product() {
       }
     }
   };
+  const changeProductStatus = async (productId) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:3003/api/product/change-status/${productId}`
+      );
+
+      const result = response.data; // Lấy dữ liệu từ phản hồi
+      // Cập nhật lại dữ liệu sau khi thay đổi trạng thái thành công
+      const updatedData = data.map((product) =>
+        product.id === productId
+          ? { ...product, status: result.product.status }
+          : product
+      );
+      setData(updatedData); // setData là hàm để cập nhật state data
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   const renderData = () => {
     if (data.length > 0) {
       return data.map((value, key) => {
-        // Tìm name của category và brand dựa trên id
         const categoryName =
           category.find((cat) => cat.id === value.id_category)?.name ||
           "Không có dữ liệu";
@@ -313,8 +362,8 @@ function Product() {
               {key + 1}
             </th>
             <td>{value.name}</td>
-            <td>{categoryName}</td> {/* Hiển thị name của category */}
-            <td>{brandName}</td> {/* Hiển thị name của brand */}
+            <td>{categoryName}</td>
+            <td>{brandName}</td>
             <td className="text-center">{value.price}</td>
             <td className="text-center">{value.sale}</td>
             <td className="text-center">
@@ -322,6 +371,7 @@ function Product() {
                 className={`btn ${
                   value.status === 1 ? "btn-success" : "btn-secondary"
                 }`}
+                onClick={() => changeProductStatus(value.id)} // Thay đổi trạng thái khi click
               >
                 {value.status === 1 ? "Còn hàng" : "Hết hàng"}
               </button>
@@ -358,7 +408,7 @@ function Product() {
                 onClick={() => handleDelete(value.id)}
                 className="btn btn-danger"
               >
-                <i class="fa-regular fa-trash-can" />
+                <i className="fa-regular fa-trash-can" />
               </button>
             </td>
           </tr>
@@ -718,6 +768,18 @@ function Product() {
       </div>
       <hr />
       <div className="row">
+        <div className="input-container">
+          <input
+            className="input"
+            name="text"
+            type="text"
+            placeholder="Search the something..."
+            value={query}
+            onChange={handleInputChange}
+          />
+        </div>
+      </div>
+      <div className="row mt-3">
         <div className="card">
           <div className="card-header bg-white">
             <h4>
@@ -725,7 +787,7 @@ function Product() {
             </h4>
           </div>
           <div className="card-body">
-            <table class="table table-bordered">
+            <table className="table table-bordered">
               <thead>
                 <tr>
                   <th scope="col">#</th>
