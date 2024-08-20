@@ -15,6 +15,7 @@ function Product() {
   const [detailID, setdetailID] = useState(null);
   const [image, setImage] = useState("");
   const [user, setUser] = useState([]);
+
   const [inputEdit, setInputEdit] = useState({
     id_category: "",
     id_brand: "",
@@ -39,6 +40,56 @@ function Product() {
     detail: "",
     image: "",
   });
+  // start phân trang
+  // Các state liên quan đến phân trang
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10; // Đặt số lượng sản phẩm muốn hiển thị trên mỗi trang
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentData = data.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
+
+  const renderPagination = () => {
+    const totalPages = Math.ceil(data.length / itemsPerPage);
+    const pages = [];
+
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push(
+        <button
+          key={i}
+          style={{ marginRight: "10px" }}
+          className={`btn ${
+            currentPage === i ? "btn-primary" : "btn-secondary"
+          }`}
+          onClick={() => handlePageChange(i)}
+        >
+          {i}
+        </button>
+      );
+    }
+    // end phân trang
+    return (
+      <div className="d-flex justify-content-center align-items-center mt-3">
+        <button
+          className="btn btn-secondary me-2"
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1} // Vô hiệu hóa nút "Trang trước" khi đang ở trang đầu
+        >
+          Trang trước
+        </button>
+        {pages}
+        <button
+          className="btn btn-secondary ms-2"
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages} // Vô hiệu hóa nút "Trang sau" khi đang ở trang cuối
+        >
+          Trang sau
+        </button>
+      </div>
+    );
+  };
 
   const handleProductInputFile = (e) => {
     const file = e.target.files[0];
@@ -347,8 +398,8 @@ function Product() {
   };
 
   const renderData = () => {
-    if (data.length > 0) {
-      return data.map((value, key) => {
+    if (currentData.length > 0) {
+      return currentData.map((value, key) => {
         const categoryName =
           category.find((cat) => cat.id === value.id_category)?.name ||
           "Không có dữ liệu";
@@ -359,7 +410,8 @@ function Product() {
         return (
           <tr key={key}>
             <th className="align-middle text-center" scope="row">
-              {key + 1}
+              {key + 1 + indexOfFirstItem}{" "}
+              {/* Điều chỉnh chỉ số theo phân trang */}
             </th>
             <td>{value.name}</td>
             <td>{categoryName}</td>
@@ -443,27 +495,27 @@ function Product() {
           </button>
         </div>
         <div
-          class="modal fade"
+          className="modal fade"
           id="exampleModal"
           tabIndex="-1"
           aria-labelledby="exampleModalLabel"
           aria-hidden="true"
         >
-          <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">
+          <div className="modal-dialog modal-lg">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel">
                   Thêm mới sản phẩm
                 </h5>
                 <button
                   type="button"
-                  class="btn-close"
+                  className="btn-close"
                   data-bs-dismiss="modal"
                   aria-label="Close"
                 ></button>
               </div>
               <form onSubmit={handleSubmit}>
-                <div class="modal-body">
+                <div className="modal-body">
                   <div className="row-8">
                     <label>Tên sản phẩm</label>
                     <input
@@ -569,16 +621,16 @@ function Product() {
                     />
                   </div>
                 </div>
-                <div class="modal-footer">
+                <div className="modal-footer">
                   <button
                     id="dongmodal"
                     type="button"
-                    class="btn btn-secondary"
+                    className="btn btn-secondary"
                     data-bs-dismiss="modal"
                   >
                     Close
                   </button>
-                  <button type="submit" class="btn btn-primary">
+                  <button type="submit" className="btn btn-primary">
                     Save changes
                   </button>
                 </div>
@@ -620,28 +672,28 @@ function Product() {
           </div>
         </div>
         <div
-          class="modal fade"
+          className="modal fade"
           id="updateModal"
           tabIndex="-1"
           aria-labelledby="exampleModalLabel"
           aria-hidden="true"
         >
-          <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">
+          <div className="modal-dialog modal-lg">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel">
                   Cập nhật sản phẩm
                 </h5>
                 <button
                   type="button"
-                  class="btn-close"
+                  className="btn-close"
                   data-bs-dismiss="modal"
                   aria-label="Close"
                 ></button>
               </div>
-              <div class="modal-body">
+              <div className="modal-body">
                 <form onSubmit={handleUpdateSubmit}>
-                  <div class="modal-body">
+                  <div className="modal-body">
                     <div className="row-8">
                       <label>Tên sản phẩm</label>
                       <input
@@ -747,16 +799,16 @@ function Product() {
                       />
                     </div>
                   </div>
-                  <div class="modal-footer">
+                  <div className="modal-footer">
                     <button
                       id="closeModalUpdate"
                       type="button"
-                      class="btn btn-secondary"
+                      className="btn btn-secondary"
                       data-bs-dismiss="modal"
                     >
                       Close
                     </button>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" className="btn btn-primary">
                       Cập nhật
                     </button>
                   </div>
@@ -808,6 +860,7 @@ function Product() {
           </div>
         </div>
       </div>
+      {renderPagination()}
     </div>
   );
 }

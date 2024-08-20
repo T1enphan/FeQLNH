@@ -42,7 +42,7 @@ function Header() {
                 data-bs-toggle="dropdown"
               >
                 <div className="position-relative">
-                  <i class="fa-regular fa-bell" />
+                  <i className="fa-regular fa-bell" />
                   <span className="indicator">4</span>
                 </div>
               </a>

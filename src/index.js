@@ -16,7 +16,9 @@ import BlogList from "./Blog/BlogList";
 import Brand from "./Brand/brand";
 import Category from "./Category/category";
 import Product from "./Product/product";
+import ClientHome from "./Client_User/Home_page"; // Component giao diện client
 import withAuth from "./withAuth"; // Import HOC
+import Products_client from "./Client_User/Product_client";
 
 const ProtectedTest = withAuth(Test);
 const ProtectedBlog = withAuth(Blog);
@@ -34,6 +36,7 @@ root.render(
     <Router>
       <App>
         <Routes>
+          {/* Admin routes */}
           <Route path="/" element={<ProtectedTest />} />
           <Route path="/user" element={<ProtectedUser />} />
           <Route path="/blog" element={<ProtectedBlog />} />
@@ -46,13 +49,14 @@ root.render(
           <Route path="/brand" element={<ProtectedBrand />} />
           <Route path="/category" element={<ProtectedCategory />} />
           <Route path="/product" element={<ProtectedProduct />} />
+          {/* Client routes */}
+          <Route path="/client/home" element={<ClientHome />} />
+          <Route path="/client/products" element={<Products_client />} />
+          {/* Thêm các route khác cho client tại đây */}
         </Routes>
       </App>
     </Router>
   </React.StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
