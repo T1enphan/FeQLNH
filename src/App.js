@@ -2,6 +2,7 @@ import React from "react";
 import { useLocation } from "react-router-dom";
 import AdminLayout from "./Layouts/AdminLayout";
 import ClientLayout from "./Layouts/ClientLayout";
+import { CartProvider } from "./Client_User/CartContext";
 
 function App(props) {
   const location = useLocation();
@@ -11,7 +12,9 @@ function App(props) {
   const isClient = pathname.includes("/client");
 
   return isClient ? (
-    <ClientLayout>{props.children}</ClientLayout>
+    <CartProvider>
+      <ClientLayout>{props.children}</ClientLayout>
+    </CartProvider>
   ) : (
     <AdminLayout>{props.children}</AdminLayout>
   );

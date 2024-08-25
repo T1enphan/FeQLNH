@@ -19,6 +19,7 @@ import Product from "./Product/product";
 import ClientHome from "./Client_User/Home_page"; // Component giao diện client
 import withAuth from "./withAuth"; // Import HOC
 import Products_client from "./Client_User/Product_client";
+import BlogClient from "./Client_User/Blog_Detail_Client";
 
 const ProtectedTest = withAuth(Test);
 const ProtectedBlog = withAuth(Blog);
@@ -52,6 +53,7 @@ root.render(
           {/* Client routes */}
           <Route path="/client/home" element={<ClientHome />} />
           <Route path="/client/products" element={<Products_client />} />
+          <Route path="/client/blog-detail/:id" element={<BlogClient />} />
           {/* Thêm các route khác cho client tại đây */}
         </Routes>
       </App>

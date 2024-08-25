@@ -92,16 +92,6 @@ export default function MenuLeft() {
                 <span className="align-middle">Product</span>
               </Link>
             </li>
-            <li
-              className={`sidebar-item ${
-                location.pathname === "/product" ? "active" : ""
-              }`}
-            >
-              <Link className="sidebar-link" to="/product">
-                <i className="fa-solid fa-right-to-bracket"></i>
-                <span className="align-middle">Cart</span>
-              </Link>
-            </li>
             {/* <li className="sidebar-item">
               <a className="sidebar-link" href="/update-user">
                 <i class="fa-solid fa-right-to-bracket"></i>

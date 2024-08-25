@@ -1,4 +1,7 @@
+import { useState, useEffect, useContext } from "react";
+import { CartContext } from "../Client_User/CartContext";
 function Navbar() {
+  const { cartLength } = useContext(CartContext);
   return (
     <header className="main-header">
       <div className="header-top">
@@ -396,7 +399,8 @@ function Navbar() {
               <li className="shop-cart">
                 <a href="shop.html">
                   <i className="flaticon-shopping-cart-1" />
-                  <span>3</span>
+                  {cartLength > 0 && <span>{cartLength}</span>}
+                  {""}
                 </a>
               </li>
             </ul>

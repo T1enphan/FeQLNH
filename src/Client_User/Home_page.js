@@ -1,11 +1,13 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
+import News from "./News";
 import axios from "axios";
-
+import { CartContext } from "./CartContext";
 function ClientHome() {
   const [data, setData] = useState([]);
-
+  const [productId, setProductId] = useState({});
+  const [cart, setCart] = useState({});
+  const { cartLength, setCartLength } = useContext(CartContext);
   const getData = async () => {
     try {
       const res = await axios.get("http://localhost:3003/api/product/get-data");
@@ -16,13 +18,52 @@ function ClientHome() {
   };
   useEffect(() => {
     getData();
+    const getCartLength = async () => {
+      const dataCartLocal = localStorage.getItem("cart");
+      if (dataCartLocal) {
+        const dataCart = JSON.parse(dataCartLocal);
+        setCart(dataCart);
+        axios
+          .post("http://localhost:3003/api/product/cart", dataCart)
+          .then((res) => {
+            setCartLength(
+              Object.keys(dataCart).reduce((sum, key) => sum + dataCart[key], 0)
+            ); // Cập nhật cartLength
+          });
+      }
+    };
+    getCartLength();
   }, []);
+
+  const addToCart = (product) => {
+    const productId = product.id;
+    const qty = 1;
+    let cart = JSON.parse(localStorage.getItem("cart")) || {};
+    if (!cart[productId]) {
+      cart[productId] = qty;
+    }
+    setCartLength(Object.keys(cart).reduce((sum, key) => sum + cart[key], 0));
+    console.log(cartLength);
+    localStorage.setItem("cart", JSON.stringify(cart));
+    console.log("Product added to cart:", cart);
+    axios
+      .post("http://localhost:3003/api/product/cart", cart)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   const renderData = () => {
     if ((data.length = 8)) {
       return data.map((value, key) => {
         return (
-          <div className="col-lg-3 col-md-6 col-sm-12 shop-block masonry-item small-column best_seller">
+          <div
+            key={key}
+            className="col-lg-3 col-md-6 col-sm-12 shop-block masonry-item small-column best_seller"
+          >
             <div className="shop-block-one">
               <div className="inner-box">
                 <figure className="image-box">
@@ -44,7 +85,7 @@ function ClientHome() {
                       </a>
                     </li>
                     <li>
-                      <a href="product-details.html">Add to cart</a>
+                      <a onClick={() => addToCart(value)}>Add to cart</a>
                     </li>
                     <li>
                       <a
@@ -59,7 +100,7 @@ function ClientHome() {
                 </figure>
                 <div className="lower-content">
                   <a href="product-details.html">{value.name}</a>
-                  <span className="price">{value.price}$</span>
+                  <span className="price">{value.sale} VND</span>
                 </div>
               </div>
             </div>
@@ -186,86 +227,6 @@ function ClientHome() {
             </div>
             <div className="items-container row clearfix">
               {/* product */}
-              {/* <div className="col-lg-3 col-md-6 col-sm-12 shop-block masonry-item small-column best_seller">
-                <div className="shop-block-one">
-                  <div className="inner-box">
-                    <figure className="image-box">
-                      <img src="/assets/images/resource/shop/shop-2.jpg"  />
-                      <span className="category green-bg">New</span>
-                      <ul
-                        className="info-list clearfix"
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          padding: 0,
-                          margin: 0,
-                          listStyleType: "none",
-                        }}
-                      >
-                        <li>
-                          <a href="index.html">
-                            <i className="flaticon-heart" />
-                          </a>
-                        </li>
-                        <li>
-                          <a href="product-details.html">Add to cart</a>
-                        </li>
-                        <li>
-                          <a
-                            href="assets/images/resource/shop/shop-2.jpg"
-                            className="lightbox-image"
-                            data-fancybox="gallery"
-                          >
-                            <i className="flaticon-search" />
-                          </a>
-                        </li>
-                      </ul>
-                    </figure>
-                    <div className="lower-content">
-                      <a href="product-details.html">
-                        Multi-Way Ultra Crop Top
-                      </a>
-                      <span className="price">$50.00</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-3 col-md-6 col-sm-12 shop-block masonry-item small-column best_seller new_arraivals top_rate">
-                <div className="shop-block-one">
-                  <div className="inner-box">
-                    <figure className="image-box">
-                      <img
-                        src="/assets/images/resource/shop/shop-7.jpg"
-                        =""
-                      />
-                      <span className="category red-bg">Hot</span>
-                      <ul className="info-list clearfix">
-                        <li>
-                          <a href="index.html">
-                            <i className="flaticon-heart"></i>
-                          </a>
-                        </li>
-                        <li>
-                          <a href="product-details.html">Add to cart</a>
-                        </li>
-                        <li>
-                          <a
-                            href="assets/images/resource/shop/shop-7.jpg"
-                            className="lightbox-image"
-                            data-fancybox="gallery"
-                          >
-                            <i className="flaticon-search"></i>
-                          </a>
-                        </li>
-                      </ul>
-                    </figure>
-                    <div className="lower-content">
-                      <a href="product-details.html">Woven Crop Cami</a>
-                      <span className="price">$90.30</span>
-                    </div>
-                  </div>
-                </div>
-              </div> */}
               {renderData()}
             </div>
           </div>
@@ -277,6 +238,7 @@ function ClientHome() {
           </div>
         </div>
       </section>
+      {<News />}
     </>
   );
 }
