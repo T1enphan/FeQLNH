@@ -4,7 +4,7 @@ const CartContext = createContext();
 
 const CartProvider = ({ children }) => {
   const [cartLength, setCartLength] = useState(0);
-  const [wishlistCount, setWishListCount] = useState(0);
+  // const [wishlistCount, setWishListCount] = useState(0);
   return (
     <CartContext.Provider value={{ cartLength, setCartLength }}>
       {children}

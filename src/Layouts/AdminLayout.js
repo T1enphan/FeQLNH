@@ -10,7 +10,8 @@ function AdminLayout(props) {
   const { pathname } = location;
 
   // Ẩn các component admin nếu đường dẫn có chứa "/login", "/register", hoặc có từ "user"
-  const hideComponents = pathname === "/login" || pathname === "/register";
+  const hideComponents =
+    pathname === "/admin/login" || pathname === "/admin/register";
 
   return (
     <div className="wrapper">

@@ -1,8 +1,12 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
-
+import { useEffect, useState, useContext } from "react";
+import { CartContext } from "./CartContext";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function Products_client() {
   const [data, setData] = useState([]);
+  const [cart, setCart] = useState({});
+  const { cartLength, setCartLength } = useContext(CartContext);
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12; // Đặt số lượng sản phẩm muốn hiển thị trên mỗi trang
@@ -64,6 +68,26 @@ function Products_client() {
     );
   };
 
+  const addToCart = (product) => {
+    const productId = product.id;
+    const qty = 1;
+    let cart = JSON.parse(localStorage.getItem("cart")) || {};
+    if (!cart[productId]) {
+      cart[productId] = qty;
+    }
+    setCartLength(Object.keys(cart).reduce((sum, key) => sum + cart[key], 0));
+    localStorage.setItem("cart", JSON.stringify(cart));
+    axios
+      .post("http://localhost:3003/api/product/cart", cart)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    toast.success("Đã thêm sản phẩm vào giỏ hàng!");
+  };
+
   const fetchData = async () => {
     try {
       const response = await axios.get(
@@ -77,11 +101,35 @@ function Products_client() {
 
   useEffect(() => {
     fetchData();
+    const getCartLength = async () => {
+      const dataCartLocal = localStorage.getItem("cart");
+      if (dataCartLocal) {
+        const dataCart = JSON.parse(dataCartLocal);
+        setCart(dataCart);
+        axios
+          .post("http://localhost:3003/api/product/cart", dataCart)
+          .then((res) => {
+            setCartLength(
+              Object.keys(dataCart).reduce((sum, key) => sum + dataCart[key], 0)
+            ); // Cập nhật cartLength
+          });
+      }
+    };
+    getCartLength();
   }, []);
+
+  const formatCurrency = (amount) => {
+    return amount.toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    });
+    //format price to VND
+  };
 
   function renderData() {
     if (currentData.length > 0) {
       return currentData.map((value, key) => {
+        const formatPrice = formatCurrency(value.price);
         return (
           <div key={key} className="col-lg-3 col-md-6 col-sm-12 shop-block">
             <div className="shop-block-one">
@@ -95,7 +143,7 @@ function Products_client() {
                       </a>
                     </li>
                     <li>
-                      <a href="product-details.html">Add to cart</a>
+                      <a onClick={() => addToCart(value)}>Add to cart</a>
                     </li>
                     <li>
                       <a
@@ -110,7 +158,7 @@ function Products_client() {
                 </figure>
                 <div className="lower-content">
                   <a href="product-details.html">{value.name}</a>
-                  <span className="price">${value.price}</span>
+                  <span className="price">{formatPrice}</span>
                 </div>
               </div>
             </div>
@@ -121,200 +169,210 @@ function Products_client() {
   }
 
   return (
-    <section className="shop-page-section shop-page-1">
-      <div className="auto-container">
-        <div className="item-shorting clearfix">
-          <div className="left-column pull-left clearfix">
-            <div className="filter-box">
-              <div className="dropdown">
-                <button
-                  className="search-box-btn"
-                  type="button"
-                  id="dropdownMenu5"
-                  data-toggle="dropdown"
-                  aria-haspopup="true"
-                  aria-expanded="false"
-                >
-                  <i className="flaticon-list-2" />
-                  Filter
-                </button>
-                <div
-                  className="filter-content dropdown-menu pull-right search-panel"
-                  aria-labelledby="dropdownMenu5"
-                >
-                  <div className="close-btn">
-                    <i className="flaticon-close" />
-                  </div>
-                  <div className="discription-box">
-                    <div className="row clearfix">
-                      <div className="col-lg-3 col-md-6 col-sm-12 column">
-                        <div className="single-column">
-                          <h4>Category</h4>
-                          <ul className="list clearfix">
-                            <li>
-                              <a href="single-shop-1.html">
-                                Women’s Clothing (6)
-                              </a>
-                            </li>
-                            <li>
-                              <a href="single-shop-1.html">Man Fashion (9)</a>
-                            </li>
-                            <li>
-                              <a href="single-shop-1.html">
-                                Kid’s Clothing (2)
-                              </a>
-                            </li>
-                            <li>
-                              <a href="single-shop-1.html">
-                                Jewelry &amp; Watches (5)
-                              </a>
-                            </li>
-                            <li>
-                              <a href="single-shop-1.html">
-                                Bags &amp; Shoes (3)
-                              </a>
-                            </li>
-                          </ul>
+    <>
+      <ToastContainer />
+      <section className="shop-page-section shop-page-1">
+        <div className="auto-container">
+          <div className="item-shorting clearfix">
+            <div className="left-column pull-left clearfix">
+              <div className="filter-box">
+                <div className="dropdown">
+                  <button
+                    className="search-box-btn"
+                    type="button"
+                    id="dropdownMenu5"
+                    data-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                  >
+                    <i className="flaticon-list-2" />
+                    Filter
+                  </button>
+                  <div
+                    className="filter-content dropdown-menu pull-right search-panel"
+                    aria-labelledby="dropdownMenu5"
+                  >
+                    <div className="close-btn">
+                      <i className="flaticon-close" />
+                    </div>
+                    <div className="discription-box">
+                      <div className="row clearfix">
+                        <div className="col-lg-3 col-md-6 col-sm-12 column">
+                          <div className="single-column">
+                            <h4>Category</h4>
+                            <ul className="list clearfix">
+                              <li>
+                                <a href="single-shop-1.html">
+                                  Women’s Clothing (6)
+                                </a>
+                              </li>
+                              <li>
+                                <a href="single-shop-1.html">Man Fashion (9)</a>
+                              </li>
+                              <li>
+                                <a href="single-shop-1.html">
+                                  Kid’s Clothing (2)
+                                </a>
+                              </li>
+                              <li>
+                                <a href="single-shop-1.html">
+                                  Jewelry &amp; Watches (5)
+                                </a>
+                              </li>
+                              <li>
+                                <a href="single-shop-1.html">
+                                  Bags &amp; Shoes (3)
+                                </a>
+                              </li>
+                            </ul>
+                          </div>
                         </div>
-                      </div>
-                      <div className="col-lg-3 col-md-6 col-sm-12 column">
-                        <div className="single-column">
-                          <h4>Age</h4>
-                          <ul className="list clearfix">
-                            <li>
-                              <a href="single-shop-1.html">0 - 12 Months (9)</a>
-                            </li>
-                            <li>
-                              <a href="single-shop-1.html">01 - 04 Years (5)</a>
-                            </li>
-                            <li>
-                              <a href="single-shop-1.html">05 - 08 Years (6)</a>
-                            </li>
-                            <li>
-                              <a href="single-shop-1.html">
-                                09 - 12 Years (10)
-                              </a>
-                            </li>
-                            <li>
-                              <a href="single-shop-1.html">13 - 14 Years (7)</a>
-                            </li>
-                          </ul>
+                        <div className="col-lg-3 col-md-6 col-sm-12 column">
+                          <div className="single-column">
+                            <h4>Age</h4>
+                            <ul className="list clearfix">
+                              <li>
+                                <a href="single-shop-1.html">
+                                  0 - 12 Months (9)
+                                </a>
+                              </li>
+                              <li>
+                                <a href="single-shop-1.html">
+                                  01 - 04 Years (5)
+                                </a>
+                              </li>
+                              <li>
+                                <a href="single-shop-1.html">
+                                  05 - 08 Years (6)
+                                </a>
+                              </li>
+                              <li>
+                                <a href="single-shop-1.html">
+                                  09 - 12 Years (10)
+                                </a>
+                              </li>
+                              <li>
+                                <a href="single-shop-1.html">
+                                  13 - 14 Years (7)
+                                </a>
+                              </li>
+                            </ul>
+                          </div>
                         </div>
-                      </div>
-                      <div className="col-lg-3 col-md-6 col-sm-12 column">
-                        <div className="single-column">
-                          <h4>Size</h4>
-                          <ul className="list clearfix">
-                            <li>
-                              <a href="single-shop-1.html">XXL (6)</a>
-                            </li>
-                            <li>
-                              <a href="single-shop-1.html">XL (9)</a>
-                            </li>
-                            <li>
-                              <a href="single-shop-1.html">S (2)</a>
-                            </li>
-                            <li>
-                              <a href="single-shop-1.html">M (5)</a>
-                            </li>
-                            <li>
-                              <a href="single-shop-1.html">L (3)</a>
-                            </li>
-                          </ul>
+                        <div className="col-lg-3 col-md-6 col-sm-12 column">
+                          <div className="single-column">
+                            <h4>Size</h4>
+                            <ul className="list clearfix">
+                              <li>
+                                <a href="single-shop-1.html">XXL (6)</a>
+                              </li>
+                              <li>
+                                <a href="single-shop-1.html">XL (9)</a>
+                              </li>
+                              <li>
+                                <a href="single-shop-1.html">S (2)</a>
+                              </li>
+                              <li>
+                                <a href="single-shop-1.html">M (5)</a>
+                              </li>
+                              <li>
+                                <a href="single-shop-1.html">L (3)</a>
+                              </li>
+                            </ul>
+                          </div>
                         </div>
-                      </div>
-                      <div className="col-lg-3 col-md-6 col-sm-12 column">
-                        <div className="single-column">
-                          <h4>Color</h4>
-                          <ul className="color-list clearfix">
-                            <li>
-                              <span className="black" />
-                              <a href="single-shop-1.html">Black (3)</a>
-                            </li>
-                            <li>
-                              <span className="blue" />
-                              <a href="single-shop-1.html">Blue (6)</a>
-                            </li>
-                            <li>
-                              <span className="orange" />
-                              <a href="single-shop-1.html">Orange (9)</a>
-                            </li>
-                            <li>
-                              <span className="green" />
-                              <a href="single-shop-1.html">Green (5)</a>
-                            </li>
-                            <li>
-                              <span className="purple" />
-                              <a href="single-shop-1.html">Purple (3)</a>
-                            </li>
-                          </ul>
+                        <div className="col-lg-3 col-md-6 col-sm-12 column">
+                          <div className="single-column">
+                            <h4>Color</h4>
+                            <ul className="color-list clearfix">
+                              <li>
+                                <span className="black" />
+                                <a href="single-shop-1.html">Black (3)</a>
+                              </li>
+                              <li>
+                                <span className="blue" />
+                                <a href="single-shop-1.html">Blue (6)</a>
+                              </li>
+                              <li>
+                                <span className="orange" />
+                                <a href="single-shop-1.html">Orange (9)</a>
+                              </li>
+                              <li>
+                                <span className="green" />
+                                <a href="single-shop-1.html">Green (5)</a>
+                              </li>
+                              <li>
+                                <span className="purple" />
+                                <a href="single-shop-1.html">Purple (3)</a>
+                              </li>
+                            </ul>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="price-filters">
-                    <h4 className="sidebar-title">Price Range</h4>
-                    <div className="range-slider clearfix">
-                      <div className="price-range-slider" />
-                      <div className="clearfix">
-                        <p>Range:</p>
-                        <div className="title" />
-                        <div className="input">
-                          <input
-                            type="text"
-                            className="property-amount"
-                            name="field-name"
-                            readOnly
-                          />
+                    <div className="price-filters">
+                      <h4 className="sidebar-title">Price Range</h4>
+                      <div className="range-slider clearfix">
+                        <div className="price-range-slider" />
+                        <div className="clearfix">
+                          <p>Range:</p>
+                          <div className="title" />
+                          <div className="input">
+                            <input
+                              type="text"
+                              className="property-amount"
+                              name="field-name"
+                              readOnly
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
+              <div className="text">
+                <p>Showing 1–12 of 50 Results</p>
+              </div>
+              <div className="short-box clearfix">
+                <p>Short by</p>
+                <div className="select-box">
+                  <select className="wide form-control">
+                    <option data-display={9}>9</option>
+                    <option value={1}>5</option>
+                    <option value={2}>7</option>
+                    <option value={4}>15</option>
+                  </select>
+                </div>
+              </div>
             </div>
-            <div className="text">
-              <p>Showing 1–12 of 50 Results</p>
-            </div>
-            <div className="short-box clearfix">
-              <p>Short by</p>
-              <div className="select-box">
-                <select className="wide form-control">
-                  <option data-display={9}>9</option>
-                  <option value={1}>5</option>
-                  <option value={2}>7</option>
-                  <option value={4}>15</option>
-                </select>
+            <div className="right-column pull-right clearfix">
+              <div className="short-box clearfix">
+                <p>Short by</p>
+                <div className="select-box">
+                  <select className="wide form-control">
+                    <option data-display="Popularity">Popularity</option>
+                    <option value={1}>New Collection</option>
+                    <option value={2}>Top Sell</option>
+                    <option value={4}>Top Ratted</option>
+                  </select>
+                </div>
+              </div>
+              <div className="menu-box">
+                <a href="shop.html">
+                  <i className="flaticon-menu" />
+                </a>
+                <a href="shop.html">
+                  <i className="flaticon-list" />
+                </a>
               </div>
             </div>
           </div>
-          <div className="right-column pull-right clearfix">
-            <div className="short-box clearfix">
-              <p>Short by</p>
-              <div className="select-box">
-                <select className="wide form-control">
-                  <option data-display="Popularity">Popularity</option>
-                  <option value={1}>New Collection</option>
-                  <option value={2}>Top Sell</option>
-                  <option value={4}>Top Ratted</option>
-                </select>
-              </div>
-            </div>
-            <div className="menu-box">
-              <a href="shop.html">
-                <i className="flaticon-menu" />
-              </a>
-              <a href="shop.html">
-                <i className="flaticon-list" />
-              </a>
-            </div>
+          <div className="our-shop">
+            <div className="row clearfix">{renderData()}</div>
           </div>
-        </div>
-        <div className="our-shop">
-          <div className="row clearfix">{renderData()}</div>
-        </div>
-        <div className="pagination-wrapper centred">
-          {/* <ul className="pagination clearfix">
+          <div className="pagination-wrapper centred">
+            {/* <ul className="pagination clearfix">
             <li>
               <a href="shop.html">Prev</a>
             </li>
@@ -339,10 +397,11 @@ function Products_client() {
               <a href="shop.html">Next</a>
             </li>
           </ul> */}
-          {renderPagination()}
+            {renderPagination()}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
 export default Products_client;

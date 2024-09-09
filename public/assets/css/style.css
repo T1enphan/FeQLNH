@@ -8559,10 +8559,10 @@ div#mCSB_1_container {
 .cart-section .cart-table tbody tr td.qty .item-quantity {
   position: relative;
   display: inline-block;
-  max-width: 130px;
+  max-width: 110px;
   width: 100%;
   float: left;
-  padding: 0px 40px;
+  /* padding: 0px 40px; */
   margin-left: 30px;
   border: 1px solid #e6e6e6;
   z-index: 1;

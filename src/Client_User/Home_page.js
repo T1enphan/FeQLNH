@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import News from "./News";
 import axios from "axios";
 import { CartContext } from "./CartContext";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function ClientHome() {
   const [data, setData] = useState([]);
   const [productId, setProductId] = useState({});
@@ -43,22 +45,30 @@ function ClientHome() {
       cart[productId] = qty;
     }
     setCartLength(Object.keys(cart).reduce((sum, key) => sum + cart[key], 0));
-    console.log(cartLength);
     localStorage.setItem("cart", JSON.stringify(cart));
-    console.log("Product added to cart:", cart);
     axios
       .post("http://localhost:3003/api/product/cart", cart)
       .then((res) => {
-        console.log(res);
+        console.log(res.data);
       })
       .catch((error) => {
         console.error(error);
       });
+    toast.success("Đã thêm sản phẩm vào giỏ hàng!");
   };
 
+  const formatCurrency = (amount) => {
+    return amount.toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    });
+    //format price to VND
+  };
   const renderData = () => {
     if ((data.length = 8)) {
       return data.map((value, key) => {
+        const formatPrice = formatCurrency(value.sale);
+
         return (
           <div
             key={key}
@@ -100,7 +110,7 @@ function ClientHome() {
                 </figure>
                 <div className="lower-content">
                   <a href="product-details.html">{value.name}</a>
-                  <span className="price">{value.sale} VND</span>
+                  <span className="price">{formatPrice}</span>
                 </div>
               </div>
             </div>
@@ -112,6 +122,7 @@ function ClientHome() {
 
   return (
     <>
+      <ToastContainer />
       <section className="topcategory-section centred">
         <div className="auto-container">
           <div className="sec-title">
@@ -135,7 +146,7 @@ function ClientHome() {
                 data-wow-duration="1500ms"
               >
                 <figure className="image-box">
-                  <img src="https://hanoicomputercdn.com/media/product/52656_intel_core_i7_10700.jpg" />
+                  <img src="https://nguyencongpc.vn/media/product/25341-14900k.png" />
                 </figure>
                 <h5>
                   <a href="index.html">Chip Collections</a>

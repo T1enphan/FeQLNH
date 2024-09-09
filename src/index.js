@@ -20,6 +20,9 @@ import ClientHome from "./Client_User/Home_page"; // Component giao diện clien
 import withAuth from "./withAuth"; // Import HOC
 import Products_client from "./Client_User/Product_client";
 import BlogClient from "./Client_User/Blog_Detail_Client";
+import CartPage from "./Client_User/Cart_page";
+import RegisterAdmin from "./Admin/Register";
+import LoginAdmin from "./Admin/Login";
 
 const ProtectedTest = withAuth(Test);
 const ProtectedBlog = withAuth(Blog);
@@ -42,8 +45,13 @@ root.render(
           <Route path="/user" element={<ProtectedUser />} />
           <Route path="/blog" element={<ProtectedBlog />} />
           <Route path="/country" element={<ProtectedCountry />} />
+
+          <Route path="/admin/register" element={<RegisterAdmin />} />
+          <Route path="/admin/login" element={<LoginAdmin />} />
+
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+
           <Route path="/update-user/:id" element={<ProtectedUser />} />
           <Route path="/blog-detail/:id" element={<ProtectedBlogDetail />} />
           <Route path="/blog-list" element={<ProtectedBlogList />} />
@@ -54,6 +62,7 @@ root.render(
           <Route path="/client/home" element={<ClientHome />} />
           <Route path="/client/products" element={<Products_client />} />
           <Route path="/client/blog-detail/:id" element={<BlogClient />} />
+          <Route path="/client/cart" element={<CartPage />} />
           {/* Thêm các route khác cho client tại đây */}
         </Routes>
       </App>

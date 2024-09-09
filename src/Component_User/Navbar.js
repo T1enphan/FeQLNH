@@ -96,7 +96,7 @@ function Navbar() {
         <div className="auto-container">
           <div className="outer-box">
             <figure className="logo-box">
-              <a href="index.html">
+              <a href="http://localhost:3000/client/home">
                 <img src="/assets/images/logo.png" alt />
               </a>
             </figure>
@@ -397,7 +397,7 @@ function Navbar() {
                 </a>
               </li>
               <li className="shop-cart">
-                <a href="shop.html">
+                <a href="http://localhost:3000/client/cart">
                   <i className="flaticon-shopping-cart-1" />
                   {cartLength > 0 && <span>{cartLength}</span>}
                   {""}
