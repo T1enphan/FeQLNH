@@ -1,15 +1,17 @@
 import { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import News from "./News";
 import axios from "axios";
 import { CartContext } from "./CartContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 function ClientHome() {
+  const [isLogin, setIsLogin] = useState(false);
   const [data, setData] = useState([]);
   const [productId, setProductId] = useState({});
   const [cart, setCart] = useState({});
   const { cartLength, setCartLength } = useContext(CartContext);
+  const navigate = useNavigate();
   const getData = async () => {
     try {
       const res = await axios.get("http://localhost:3003/api/product/get-data");
@@ -19,6 +21,11 @@ function ClientHome() {
     }
   };
   useEffect(() => {
+    let dataUser = localStorage.getItem("UserAccount");
+    if (dataUser) {
+      dataUser = JSON.parse(dataUser);
+      setIsLogin(true);
+    }
     getData();
     const getCartLength = async () => {
       const dataCartLocal = localStorage.getItem("cart");
@@ -37,7 +44,18 @@ function ClientHome() {
     getCartLength();
   }, []);
 
+  function checkLoginUser() {
+    if (isLogin) {
+      console.log("Đã login");
+      return true;
+    } else {
+      navigate("/client/account");
+      return false;
+    }
+  }
+
   const addToCart = (product) => {
+    if (!checkLoginUser()) return;
     const productId = product.id;
     const qty = 1;
     let cart = JSON.parse(localStorage.getItem("cart")) || {};

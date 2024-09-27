@@ -1,9 +1,12 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-const RegisterAdmin = () => {
+function Register() {
+  const navigate = useNavigate();
+  const [errors, setErrors] = useState({});
+  const [files, setFiles] = useState([]);
   const [input, setInput] = useState({
     name: "",
     email: "",
@@ -11,17 +14,6 @@ const RegisterAdmin = () => {
     phone: "",
     role: "",
   });
-  const [error, setErrors] = useState({});
-
-  const styles = {
-    container: {
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      height: "100vh",
-    },
-  };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setInput((state) => ({ ...state, [name]: value }));
@@ -52,82 +44,135 @@ const RegisterAdmin = () => {
       flag = false;
     }
     if (input.role === "") {
-      errorSubmit.role = "Vui lòng nhập quyền hạn";
-      toast.error("Vui lòng nhập quyền hạn");
+      errorSubmit.phone = "Vui lòng quyền cho nhân viên";
+      toast.error("Vui lòng quyền cho nhân viên");
       flag = false;
     }
     if (!flag) {
       setErrors(errorSubmit);
     } else {
-      toast.success("OKE");
+      setErrors({});
+      try {
+        let url = "http://localhost:3003/api/admin/register";
+        const response = await axios.post(url, {
+          email: input.email,
+          password: input.password,
+          phone: input.phone,
+          name: input.name,
+          role: input.role,
+        });
+        if (response.status === 200) {
+          setInput({ email: "", name: "", phone: "", password: "", role: "" });
+          setFiles([]);
+          setErrors({});
+          toast.success("Đăng kí thành công!");
+          setTimeout(() => {
+            navigate("/admin/login");
+          }, 2000);
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("Đã có lỗi xảy ra");
+      }
     }
   };
 
   return (
-    <>
+    <div>
       <ToastContainer />
-      <div style={styles.container}>
-        <form className="form" onSubmit={handleSubmit}>
-          <p className="title">Register</p>
-          <p className="message">Signup now and get full access to our app.</p>
-          <label>
-            <input
-              value={input.name}
-              name="name"
-              onChange={handleChange}
-              type="text"
-              className="input"
-            />
-            <span>Name</span>
-          </label>
-          <label>
-            <input
-              value={input.phone}
-              name="phone"
-              onChange={handleChange}
-              type="text"
-              className="input"
-            />
-            <span>Phone</span>
-          </label>
-          <label>
-            <input
-              type="email"
-              onChange={handleChange}
-              value={input.email}
-              name="email"
-              className="input"
-            />
-            <span>Email</span>
-          </label>
-          <label>
-            <input
-              type="password"
-              onChange={handleChange}
-              value={input.password}
-              name="password"
-              className="input"
-            />
-            <span>Password</span>
-          </label>
-          <label>
-            <input
-              type="text"
-              onChange={handleChange}
-              value={input.role}
-              name="role"
-              className="input"
-            />
-            <span>Role</span>
-          </label>
-          <button className="submit">Submit</button>
-          <p className="signin">
-            Already have an account? <a href="#">Signin</a>
-          </p>
-        </form>
-      </div>
-    </>
-  );
-};
+      <main className="d-flex w-100">
+        <div className="container d-flex flex-column">
+          <div className="row vh-100">
+            <div className="col-sm-10 col-md-8 col-lg-6 col-xl-5 mx-auto d-table h-100">
+              <div className="d-table-cell align-middle">
+                <div className="text-center mt-4">
+                  <h1 className="h2">Get started</h1>
+                  <p className="lead">
+                    Start creating the best possible user experience for you
+                    customers.
+                  </p>
+                </div>
 
-export default RegisterAdmin;
+                <div className="card">
+                  <div className="card-body">
+                    <div className="m-sm-3">
+                      <form onSubmit={handleSubmit}>
+                        <div className="mb-3">
+                          <label className="form-label">Full name</label>
+                          <input
+                            className="form-control form-control-lg"
+                            type="text"
+                            name="name"
+                            value={input.name}
+                            placeholder="Enter your name"
+                            onChange={handleChange}
+                          />
+                        </div>
+                        <div className="mb-3">
+                          <label className="form-label">Email</label>
+                          <input
+                            className="form-control form-control-lg"
+                            type="email"
+                            name="email"
+                            value={input.email}
+                            placeholder="Enter your email"
+                            onChange={handleChange}
+                          />
+                        </div>
+                        <div className="mb-3">
+                          <label className="form-label">Password</label>
+                          <input
+                            className="form-control form-control-lg"
+                            type="password"
+                            name="password"
+                            placeholder="Enter password"
+                            value={input.password}
+                            onChange={handleChange}
+                          />
+                        </div>
+                        <div className="mb-3">
+                          <label className="form-label">Phone Number</label>
+                          <input
+                            className="form-control form-control-lg"
+                            type="text"
+                            name="phone"
+                            placeholder="Phone number"
+                            value={input.phone}
+                            onChange={handleChange}
+                          />
+                        </div>
+                        <div className="mb-3">
+                          <label className="form-label">Phone Number</label>
+                          <input
+                            className="form-control form-control-lg"
+                            type="text"
+                            name="role"
+                            placeholder="Role"
+                            value={input.role}
+                            onChange={handleChange}
+                          />
+                        </div>
+                        <div className="d-grid gap-2 mt-3">
+                          <button
+                            type="submit"
+                            className="btn btn-lg btn-primary"
+                          >
+                            Sign up
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+                <div className="text-center mb-3">
+                  Already have account? <a href="/login">Log In</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
+export default Register;

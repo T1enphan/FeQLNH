@@ -230,7 +230,7 @@ function Product() {
   };
 
   const getUser = async () => {
-    let userData = localStorage.getItem("accountLogin");
+    let userData = localStorage.getItem("UserAccount");
     let userLocal = JSON.parse(userData);
     setUser(userLocal.user);
     setAccessToken(userLocal.token);

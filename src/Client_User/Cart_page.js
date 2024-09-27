@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { CartContext } from "./CartContext";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function CartPage() {
   const [data, setData] = useState([]);
   const [cart, setCart] = useState({});
@@ -18,7 +20,6 @@ function CartPage() {
       axios
         .post("http://localhost:3003/api/product/cart", dataCart)
         .then((res) => {
-          console.log(res.data.data);
           setData(res.data.data);
           setCartLength(
             Object.keys(dataCart).reduce((sum, key) => sum + dataCart[key], 0)
@@ -66,6 +67,53 @@ function CartPage() {
       currency: "VND",
     });
     //format price to VND
+  };
+
+  const handleCheckout = async () => {
+    // Lấy giỏ hàng từ localStorage (dữ liệu lưu trữ theo dạng { id: qty })
+    const cart = JSON.parse(localStorage.getItem("cart") || "{}");
+    const userData = JSON.parse(localStorage.getItem("UserAccount") || "{}");
+
+    // Lấy thông tin người dùng
+    const userEmail = userData?.user?.email; // Sử dụng optional chaining
+
+    // Kiểm tra xem email có tồn tại hay không
+    if (!userEmail) {
+      toast.error("Vui lòng đăng nhập để gửi hóa đơn.");
+      return; // Thoát hàm nếu không có email
+    }
+
+    // Kiểm tra giỏ hàng có trống hay không
+    if (Object.keys(cart).length === 0) {
+      toast.error("Giỏ hàng của bạn trống.");
+      return; // Thoát hàm nếu giỏ hàng trống
+    }
+
+    try {
+      // Gửi yêu cầu POST đến API với dữ liệu giỏ hàng và email
+      const response = await axios.post(
+        "http://localhost:3003/api/product/sendbill",
+        {
+          email: userEmail,
+          cart: cart,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userData?.token}`, // Thêm token vào header
+          },
+        }
+      );
+
+      // Xử lý phản hồi từ server
+      if (response.status === 200) {
+        toast.warning("Hóa đơn đã được gửi về email của bạn!");
+      } else {
+        toast.error("Có lỗi xảy ra khi gửi hóa đơn.");
+      }
+    } catch (error) {
+      console.error("Error sending bill:", error);
+      toast.error("Có lỗi xảy ra khi gửi hóa đơn.");
+    }
   };
 
   function renderData() {
@@ -163,25 +211,27 @@ function CartPage() {
 
   const totalBill = calculateTotal();
   return (
-    <section className="cart-section cart-page">
-      <div className="auto-container">
-        <div className="row clearfix">
-          <div className="col-lg-12 col-md-12 col-sm-12 table-column">
-            <div className="table-outer">
-              <table className="cart-table">
-                <thead className="cart-header">
-                  <tr>
-                    <th>&nbsp;</th>
-                    <th className="prod-column">Product Name</th>
-                    <th>&nbsp;</th>
-                    <th>&nbsp;</th>
-                    <th className="price">Price</th>
-                    <th className="quantity">Quantity</th>
-                    <th>Subtotal</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {/* <tr>
+    <>
+      <ToastContainer />
+      <section className="cart-section cart-page">
+        <div className="auto-container">
+          <div className="row clearfix">
+            <div className="col-lg-12 col-md-12 col-sm-12 table-column">
+              <div className="table-outer">
+                <table className="cart-table">
+                  <thead className="cart-header">
+                    <tr>
+                      <th>&nbsp;</th>
+                      <th className="prod-column">Product Name</th>
+                      <th>&nbsp;</th>
+                      <th>&nbsp;</th>
+                      <th className="price">Price</th>
+                      <th className="quantity">Quantity</th>
+                      <th>Subtotal</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {/* <tr>
                     <td colSpan={4} className="prod-column">
                       <div className="column-box">
                         <div className="remove-btn">
@@ -211,50 +261,55 @@ function CartPage() {
                     </td>
                     <td className="sub-total">$50.00</td>
                   </tr> */}
-                  {renderData()}
-                </tbody>
-              </table>
+                    {renderData()}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="othre-content clearfix">
-          <div className="coupon-box pull-left clearfix">
-            <input type="text" placeholder="Enter coupon code..." />
-            <button type="submit" className="theme-btn-two">
-              Apply coupon
-              <i className="flaticon-right-1" />
-            </button>
+          <div className="othre-content clearfix">
+            <div className="coupon-box pull-left clearfix">
+              <input type="text" placeholder="Enter coupon code..." />
+              <button type="submit" className="theme-btn-two">
+                Apply coupon
+                <i className="flaticon-right-1" />
+              </button>
+            </div>
+            <div className="update-btn pull-right">
+              <button type="submit" className="theme-btn-one">
+                Update Cart
+                <i className="flaticon-right-1" />
+              </button>
+            </div>
           </div>
-          <div className="update-btn pull-right">
-            <button type="submit" className="theme-btn-one">
-              Update Cart
-              <i className="flaticon-right-1" />
-            </button>
-          </div>
-        </div>
-        <div className="cart-total">
-          <div className="row">
-            <div className="col-xl-5 col-lg-12 col-md-12 offset-xl-7 cart-column">
-              <div className="total-cart-box clearfix">
-                <h4>Cart Totals</h4>
-                <ul className="list clearfix">
-                  <li>
-                    Subtotal:<span>{totalBill}</span>
-                  </li>
-                  <li>
-                    Order Total:<span>{totalBill}</span>
-                  </li>
-                </ul>
-                <a href="cart.html" className="theme-btn-two">
-                  Proceed to Checkout
-                  <i className="flaticon-right-1" />
-                </a>
+          <div className="cart-total">
+            <div className="row">
+              <div className="col-xl-5 col-lg-12 col-md-12 offset-xl-7 cart-column">
+                <div className="total-cart-box clearfix">
+                  <h4>Cart Totals</h4>
+                  <ul className="list clearfix">
+                    <li>
+                      Subtotal:<span>{totalBill}</span>
+                    </li>
+                    <li>
+                      Order Total:<span>{totalBill}</span>
+                    </li>
+                  </ul>
+                  <a
+                    href="#"
+                    className="theme-btn-two"
+                    onClick={handleCheckout}
+                  >
+                    Proceed to Checkout
+                    <i className="flaticon-right-1" />
+                  </a>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
 export default CartPage;
