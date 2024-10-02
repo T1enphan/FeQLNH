@@ -37,7 +37,12 @@ function Country() {
             <button className="btn btn-warning" style={{ marginRight: "10px" }}>
               Chỉnh sửa
             </button>
-            <button className="btn btn-danger" onClick={() => handDelete(value.id)}>Xóa</button>
+            <button
+              className="btn btn-danger"
+              onClick={() => handDelete(value.id)}
+            >
+              Xóa
+            </button>
           </td>
         </tr>
       ));
@@ -82,7 +87,9 @@ function Country() {
     }
 
     try {
-      const res = await axios.delete(`http://localhost:3003/api/country/delete/${deleteId}`);
+      const res = await axios.delete(
+        `http://localhost:3003/api/country/delete/${deleteId}`
+      );
       if (res.status === 200) {
         toast.success("Xóa thành công quốc gia");
         fetchData(); // Cập nhật lại danh sách quốc gia
@@ -115,7 +122,9 @@ function Country() {
                 {/* {errors.name && <p className="text-danger">{errors.name}</p>} */}
               </div>
               <div className="card-footer text-end">
-                <button className="btn btn-success" type="submit">Thêm Mới</button>
+                <button className="btn btn-success" type="submit">
+                  Thêm Mới
+                </button>
               </div>
             </form>
           </div>

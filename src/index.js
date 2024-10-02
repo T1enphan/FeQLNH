@@ -39,8 +39,8 @@ root.render(
     <Router>
       <App>
         <Routes>
-          {/* Admin routes */}
           <Route path="/" element={<ProtectedTest />} />
+          {/* Admin routes */}
           <Route path="/user" element={<ProtectedUser />} />
           <Route path="/blog" element={<ProtectedBlog />} />
           <Route path="/country" element={<ProtectedCountry />} />
