@@ -230,8 +230,9 @@ function Product() {
   };
 
   const getUser = async () => {
-    let userData = localStorage.getItem("UserAccount");
-    let userLocal = JSON.parse(userData);
+    // let userData = localStorage.getItem("AdminAccount");
+    // let userLocal = JSON.parse(userData);
+    let userLocal = JSON.parse(localStorage.getItem("AdminAccount"));
     setUser(userLocal.user);
     setAccessToken(userLocal.token);
   };

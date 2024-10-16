@@ -1,7 +1,24 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function Header() {
   const [idData, setIdData] = useState({});
+  const [dataAdmin, setDataAdmin] = useState([]);
+  const navigate = useNavigate();
+
+  const getDataAdmin = async () => {
+    const admin = JSON.parse(localStorage.getItem("AdminAccount"));
+    setDataAdmin(admin.admin);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("AdminAccount");
+    toast.warning("Đã Đăng Xuất Thành Công!");
+    setTimeout(() => {
+      navigate("/admin/login");
+    }, 2000);
+  };
 
   useEffect(() => {
     const fetchData = () => {
@@ -14,6 +31,7 @@ function Header() {
       }
     };
     fetchData();
+    getDataAdmin();
   }, []); // Chạy một lần khi component được mount
 
   const LinktoProfile = () => {
@@ -28,6 +46,7 @@ function Header() {
   };
   return (
     <div>
+      <ToastContainer />
       <nav className="navbar navbar-expand navbar-light navbar-bg">
         <a className="sidebar-toggle js-sidebar-toggle">
           <i className="hamburger align-self-center" />
@@ -234,7 +253,11 @@ function Header() {
                   className="avatar img-fluid rounded me-1"
                   alt="Charles Hall"
                 />{" "} */}
-                <span className="text-dark">Neit</span>
+                {dataAdmin ? (
+                  <span className="text-dark">{dataAdmin.name}</span>
+                ) : (
+                  <span className="text-dark">Neit</span>
+                )}
               </a>
               <div className="dropdown-menu dropdown-menu-end">
                 {LinktoProfile()}
@@ -252,7 +275,7 @@ function Header() {
                   Help Center
                 </a>
                 <div className="dropdown-divider" />
-                <a className="dropdown-item" href="#">
+                <a className="dropdown-item" onClick={handleLogout} href="#">
                   Log out
                 </a>
               </div>

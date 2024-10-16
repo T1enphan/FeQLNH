@@ -22,8 +22,10 @@ import Products_client from "./Client_User/Product_client";
 import BlogClient from "./Client_User/Blog_Detail_Client";
 import CartPage from "./Client_User/Cart_page";
 import AccountClient from "./User_client/Login";
+import Task from "./Admin/task";
 
 const ProtectedTest = withAuth(Test);
+const ProtectedTask = withAuth(Task);
 const ProtectedBlog = withAuth(Blog);
 const ProtectedCountry = withAuth(Country);
 const ProtectedUser = withAuth(User);
@@ -47,7 +49,7 @@ root.render(
 
           <Route path="/admin/register" element={<Register />} />
           <Route path="/admin/login" element={<Login />} />
-
+          <Route path="/todo-list" element={<ProtectedTask />} />
           <Route path="/update-user/:id" element={<ProtectedUser />} />
           <Route path="/blog-detail/:id" element={<ProtectedBlogDetail />} />
           <Route path="/blog-list" element={<ProtectedBlogList />} />

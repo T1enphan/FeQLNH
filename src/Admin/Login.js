@@ -133,7 +133,7 @@ function Login() {
                   </div>
                 </div>
                 <div className="text-center mb-3">
-                  Don't have an account? <a href="/register">Sign up</a>
+                  Don't have an account? <a href="/admin/register">Sign up</a>
                 </div>
               </div>
             </div>

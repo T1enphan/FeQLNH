@@ -1,17 +1,36 @@
+import { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 
 export default function MenuLeft() {
   const location = useLocation();
+  const [dataAdmin, setDataAdmin] = useState([]);
   const adminData = JSON.parse(localStorage.getItem("AdminAccount"));
   const admin = adminData?.admin;
   const role = admin?.role;
+
+  useEffect(() => {
+    async function getData() {
+      const admin1 = JSON.parse(localStorage.getItem("AdminAccount"));
+      setDataAdmin(admin1.admin);
+    }
+    getData();
+  }, []);
+  console.log(dataAdmin.name);
+
   return (
     <>
       <nav id="sidebar" className="sidebar js-sidebar">
         <div className="sidebar-content js-simplebar">
-          <a className="sidebar-brand" href="index.html">
-            <span className="align-middle">Neit</span>
-          </a>
+          {dataAdmin ? (
+            <a className="sidebar-brand" href="index.html">
+              <span className="align-middle">{dataAdmin.name}</span>
+            </a>
+          ) : (
+            <a className="sidebar-brand" href="index.html">
+              <span className="align-middle">Account Admin</span>
+            </a>
+          )}
+
           <ul className="sidebar-nav">
             <li className="sidebar-header">Pages</li>
             <li
@@ -84,36 +103,44 @@ export default function MenuLeft() {
                     <span className="align-middle">Product</span>
                   </Link>
                 </li>
+                <li
+                  className={`sidebar-item ${
+                    location.pathname === "/todo-list" ? "active" : ""
+                  }`}
+                >
+                  <Link className="sidebar-link" to="/todo-list">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span className="align-middle">Todo List</span>
+                  </Link>
+                </li>
               </>
             )}
 
             {/* Chỉ SUPER_ADMIN mới thấy các mục này */}
-            {role === "SUPER_ADMIN" ||
-              (role === "ADMIN" && (
-                <>
-                  <li
-                    className={`sidebar-item ${
-                      location.pathname === "/country" ? "active" : ""
-                    }`}
-                  >
-                    <Link className="sidebar-link" to="/country">
-                      <i className="fa-solid fa-right-to-bracket"></i>
-                      <span className="align-middle">Country</span>
-                    </Link>
-                  </li>
-
-                  <li
-                    className={`sidebar-item ${
-                      location.pathname === "/user" ? "active" : ""
-                    }`}
-                  >
-                    <Link className="sidebar-link" to="/user">
-                      <i className="fa-solid fa-right-to-bracket"></i>
-                      <span className="align-middle">User</span>
-                    </Link>
-                  </li>
-                </>
-              ))}
+            {(role === "SUPER_ADMIN" || role === "ADMIN") && (
+              <>
+                <li
+                  className={`sidebar-item ${
+                    location.pathname === "/country" ? "active" : ""
+                  }`}
+                >
+                  <Link className="sidebar-link" to="/country">
+                    <i className="fa-solid fa-right-to-bracket"></i>
+                    <span className="align-middle">Country</span>
+                  </Link>
+                </li>
+                {/* <li
+                  className={`sidebar-item ${
+                    location.pathname === "/user" ? "active" : ""
+                  }`}
+                >
+                  <Link className="sidebar-link" to="/user">
+                    <i className="fa-solid fa-right-to-bracket"></i>
+                    <span className="align-middle">User</span>
+                  </Link>
+                </li> */}
+              </>
+            )}
             <li className="sidebar-header">Plugins &amp; Addons</li>
             <li
               className={`sidebar-item ${
