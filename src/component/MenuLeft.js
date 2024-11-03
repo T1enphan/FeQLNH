@@ -15,7 +15,6 @@ export default function MenuLeft() {
     }
     getData();
   }, []);
-  console.log(dataAdmin.name);
 
   return (
     <>
@@ -57,6 +56,17 @@ export default function MenuLeft() {
                   <Link className="sidebar-link" to="/blog">
                     <i className="fa-solid fa-right-to-bracket"></i>
                     <span className="align-middle">Blog</span>
+                  </Link>
+                </li>
+
+                <li
+                  className={`sidebar-item ${
+                    location.pathname === "/chat-member" ? "active" : ""
+                  }`}
+                >
+                  <Link className="sidebar-link" to="/chat-member">
+                    <i class="fa-regular fa-message"></i>
+                    <span className="align-middle">Chat</span>
                   </Link>
                 </li>
 
@@ -108,7 +118,7 @@ export default function MenuLeft() {
                     location.pathname === "/todo-list" ? "active" : ""
                   }`}
                 >
-                  <Link className="sidebar-link" to="/todo-list">
+                  <Link className="sidebar-link" to="/admin/todo-list">
                     <i class="fa-solid fa-list-check"></i>
                     <span className="align-middle">Todo List</span>
                   </Link>

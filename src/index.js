@@ -23,8 +23,11 @@ import BlogClient from "./Client_User/Blog_Detail_Client";
 import CartPage from "./Client_User/Cart_page";
 import AccountClient from "./User_client/Login";
 import Task from "./Admin/task";
+import IndexRedux from "./todolist_redux/index_redux";
+import ChatApp from "./chat_feature/chat";
 
 const ProtectedTest = withAuth(Test);
+const ProtectedChat = withAuth(ChatApp);
 const ProtectedTask = withAuth(Task);
 const ProtectedBlog = withAuth(Blog);
 const ProtectedCountry = withAuth(Country);
@@ -46,10 +49,11 @@ root.render(
           <Route path="/user" element={<ProtectedUser />} />
           <Route path="/blog" element={<ProtectedBlog />} />
           <Route path="/country" element={<ProtectedCountry />} />
-
+          <Route path="/chat-member" element={<ProtectedChat />} />
           <Route path="/admin/register" element={<Register />} />
+          <Route path="/admin/todo-list1" element={<IndexRedux />} />
           <Route path="/admin/login" element={<Login />} />
-          <Route path="/todo-list" element={<ProtectedTask />} />
+          <Route path="/admin/todo-list" element={<ProtectedTask />} />
           <Route path="/update-user/:id" element={<ProtectedUser />} />
           <Route path="/blog-detail/:id" element={<ProtectedBlogDetail />} />
           <Route path="/blog-list" element={<ProtectedBlogList />} />
