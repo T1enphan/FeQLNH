@@ -9,6 +9,7 @@ import {
   Thread,
 } from "stream-chat-react";
 import { StreamChat } from "stream-chat";
+import axios from "axios";
 import "stream-chat-react/dist/css/v2/index.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -19,36 +20,47 @@ const channelId = "chat-channel";
 const ChatApp = () => {
   const [client, setClient] = useState(null);
   const [channel, setChannel] = useState(null);
+  const [accessToken, setAccessToken] = useState(null);
+  const [adminUser, setAdminUser] = useState(null);
 
   useEffect(() => {
     const storedAdmin = localStorage.getItem("AdminAccount");
     const adminData = storedAdmin ? JSON.parse(storedAdmin) : null;
 
-    console.log(adminData.token);
+    if (adminData && adminData.admin?.id) {
+      const fetchToken = async () => {
+        try {
+          // Request the token from backend API using Axios
+          const response = await axios.get(`http://localhost:3003/api/admin/${adminData.admin.id}/token`);
+          const { token } = response.data;
 
-    if (!adminData || !adminData.admin.id) {
-      alert(
-        "Tài khoản Admin không hợp lệ. Vui lòng đăng nhập lại và kiểm tra thông tin."
-      );
-      return;
+          setAccessToken(token);
+          setAdminUser({
+            id: String(adminData.admin.id), // Ensure ID is a string
+            name: adminData.admin.name,
+          });
+        } catch (error) {
+          console.error("Error fetching token:", error);
+          toast.error("Không thể lấy token từ server.");
+        }
+      };
+
+      fetchToken();
+    } else {
+      toast.warning("Tài khoản Admin không hợp lệ. Vui lòng đăng nhập lại và kiểm tra thông tin.");
     }
+  }, []);
 
-    // Chuyển đổi id thành chuỗi và kiểm tra đối tượng adminUser
-    const adminUser = {
-      ...adminData,
-      id: adminData.admin.id.toString(), // Chuyển đổi id thành chuỗi
-    };
-
-    console.log("Thông tin adminUser:", adminUser); // Kiểm tra adminUser
+  useEffect(() => {
+    if (!accessToken || !adminUser) return;
 
     const chatClient = StreamChat.getInstance(apiKey);
-    chatClient
-      .connectUser(adminUser, chatClient.devToken(adminUser.id))
+
+    chatClient.connectUser(adminUser, accessToken)
       .then(() => {
         const channel = chatClient.channel("messaging", channelId, {
           members: [adminUser.id],
         });
-
         setChannel(channel);
         setClient(chatClient);
         channel.watch();
@@ -61,11 +73,9 @@ const ChatApp = () => {
       });
 
     return () => {
-      if (client) {
-        client.disconnectUser();
-      }
+      chatClient.disconnectUser();
     };
-  }, []);
+  }, [accessToken, adminUser]);
 
   if (!channel) {
     return <div>Loading...</div>;
