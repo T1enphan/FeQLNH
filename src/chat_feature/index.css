@@ -1,0 +1,5 @@
+.custom-message-list {
+    max-height: 500px; /* Đặt chiều cao tối đa cho hộp chat */
+    overflow-y: auto; /* Hiển thị thanh cuộn bên trong hộp chat */
+  }
+  

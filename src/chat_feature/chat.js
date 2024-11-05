@@ -13,6 +13,7 @@ import axios from "axios";
 import "stream-chat-react/dist/css/v2/index.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "../chat_feature/index.css"
 
 const apiKey = "cad9tfc3qmpv";
 const channelId = "chat-channel";
@@ -38,6 +39,7 @@ const ChatApp = () => {
           setAdminUser({
             id: String(adminData.admin.id), // Ensure ID is a string
             name: adminData.admin.name,
+            role: 'admin', //Check role cho user thứ 2 vào
           });
         } catch (error) {
           console.error("Error fetching token:", error);
@@ -54,13 +56,18 @@ const ChatApp = () => {
   useEffect(() => {
     if (!accessToken || !adminUser) return;
 
+    console.log(adminUser);
+
     const chatClient = StreamChat.getInstance(apiKey);
 
     chatClient.connectUser(adminUser, accessToken)
       .then(() => {
         const channel = chatClient.channel("messaging", channelId, {
-          members: [adminUser.id],
+          members: ["1", "2"],
+          // cần check lại chỗ này
+          // members: [adminUser.id],
         });
+        console.log(channel);
         setChannel(channel);
         setClient(chatClient);
         channel.watch();
@@ -81,23 +88,50 @@ const ChatApp = () => {
     return <div>Loading...</div>;
   }
 
+  // return (
+  //   <Chat client={client} theme="messaging light">
+  //     <ToastContainer />
+  //     <ChannelList
+  //       filters={{
+  //         type: "messaging",
+  //         members: { $in: [channelId] },
+  //       }}
+  //     />
+  //     <Channel channel={channel}>
+  //       <Window>
+  //         <MessageList className="custom-message-list" />
+  //         <MessageInput />
+  //       </Window>
+  //       <Thread />
+  //     </Channel>
+  //   </Chat>
+  // );
   return (
-    <Chat client={client} theme="messaging light">
-      <ToastContainer />
-      <ChannelList
-        filters={{
-          type: "messaging",
-          members: { $in: [channelId] },
-        }}
-      />
-      <Channel channel={channel}>
-        <Window>
-          <MessageList />
-          <MessageInput />
-        </Window>
-        <Thread />
-      </Channel>
-    </Chat>
+    <>
+      <style>
+        {`
+          .str-chat__list .str-chat__message-list-scroll .str-chat__ul {
+            max-height: 500px;
+          }
+        `}
+      </style>
+      <Chat client={client} theme="messaging light">
+        <ToastContainer />
+        <ChannelList
+          filters={{
+            type: "messaging",
+            members: { $in: [channelId] },
+          }}
+        />
+        <Channel channel={channel}>
+          <Window>
+            <MessageList />
+            <MessageInput />
+          </Window>
+          <Thread />
+        </Channel>
+      </Chat>
+    </>
   );
 };
 

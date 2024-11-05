@@ -371,6 +371,7 @@
   background-color: rgb(56, 90, 194);
 }
 
+
 @keyframes pulse {
   from {
     transform: scale(0.9);
