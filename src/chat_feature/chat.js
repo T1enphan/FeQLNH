@@ -56,14 +56,12 @@ const ChatApp = () => {
   useEffect(() => {
     if (!accessToken || !adminUser) return;
 
-    console.log(adminUser);
-
     const chatClient = StreamChat.getInstance(apiKey);
 
     chatClient.connectUser(adminUser, accessToken)
       .then(() => {
         const channel = chatClient.channel("messaging", channelId, {
-          members: ["1", "2"],
+          members: ["1", "2", "7"],
           // cần check lại chỗ này
           // members: [adminUser.id],
         });
@@ -115,17 +113,17 @@ const ChatApp = () => {
           }
         `}
       </style>
-      <Chat client={client} theme="messaging light">
+      <Chat client={client} theme="messaging dark">
         <ToastContainer />
-        <ChannelList
+        {/* <ChannelList
           filters={{
             type: "messaging",
             members: { $in: [channelId] },
           }}
-        />
+        /> */}
         <Channel channel={channel}>
           <Window>
-            <MessageList />
+            <MessageList hideDeletedMessages={true} closeReactionSelectorOnClick={false} />
             <MessageInput />
           </Window>
           <Thread />

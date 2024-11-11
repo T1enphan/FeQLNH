@@ -1,15 +1,19 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+import { useChatContext } from 'stream-chat-react';
 import "react-toastify/dist/ReactToastify.css";
+
 function Header() {
+  const { client } = useChatContext();
+  const [unreadCount, setUnreadCount] = useState(0);
   const [idData, setIdData] = useState({});
   const [dataAdmin, setDataAdmin] = useState([]);
   const navigate = useNavigate();
 
   const getDataAdmin = async () => {
     const admin = JSON.parse(localStorage.getItem("AdminAccount"));
-    setDataAdmin(admin.admin);
+    setDataAdmin(admin?.admin || {});
   };
 
   const handleLogout = () => {
@@ -34,6 +38,24 @@ function Header() {
     getDataAdmin();
   }, []); // Chạy một lần khi component được mount
 
+  useEffect(() => {
+    if (!client) {
+      return; // Trả về sớm nếu client chưa được khởi tạo
+    }
+
+    const handleNewMessage = (event) => {
+      if (event.message?.user?.id !== client.userID) {
+        setUnreadCount((prevCount) => prevCount + 1);
+      }
+    };
+
+    client.on('message.new', handleNewMessage);
+
+    return () => {
+      client.off('message.new', handleNewMessage);
+    };
+  }, [client]);
+
   const LinktoProfile = () => {
     if (idData) {
       return (
@@ -54,15 +76,13 @@ function Header() {
         <div className="navbar-collapse collapse">
           <ul className="navbar-nav navbar-align">
             <li className="nav-item dropdown">
-              <a
-                className="nav-icon dropdown-toggle"
-                href="#"
-                id="alertsDropdown"
-                data-bs-toggle="dropdown"
-              >
+              {/* đây r */}
+              <a className="nav-icon dropdown-toggle" href="#" id="alertsDropdown" data-bs-toggle="dropdown">
                 <div className="position-relative">
                   <i className="fa-regular fa-bell" />
-                  <span className="indicator">4</span>
+                  {unreadCount > 0 && (
+                    <span className="indicator">{unreadCount}</span>
+                  )}
                 </div>
               </a>
               <div
